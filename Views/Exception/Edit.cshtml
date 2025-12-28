@@ -1,0 +1,76 @@
+@model HRMANGMANGMENT.Models.ExceptionDay
+
+@{
+    ViewData["Title"] = "Edit Exception";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-edit"></i> Edit Exception</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="ExceptionId" />
+                        
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Exception Name <span class="text-danger">*</span></label>
+                            <input asp-for="Name" class="form-control" required />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Category" class="form-label">Category <span class="text-danger">*</span></label>
+                            <select asp-for="Category" class="form-select" required>
+                                <option value="">-- Select Category --</option>
+                                <option value="Holiday">🎉 Holiday</option>
+                                <option value="Special Event">⭐ Special Event</option>
+                                <option value="Company Closure">🔒 Company Closure</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Date" class="form-label">Date <span class="text-danger">*</span></label>
+                            <input asp-for="Date" type="date" class="form-control" required />
+                            <span asp-validation-for="Date" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label">Status</label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input asp-for="IsRecurring" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsRecurring" class="form-check-label">
+                                    Recurring Exception (Annual)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,107 @@
+@model HRMANGMANGMENT.Models.LeaveRequest
+@{
+    ViewData["Title"] = "Override Leave Request";
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-shield-exclamation"></i> Override Leave Request</h2>
+                <p class="mb-0 opacity-75">Override the decision for this leave request</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="AllRequests" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to All Requests
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card glass-card hover-lift">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Request Details</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Request Info (Read-only) -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">Employee</label>
+                            <p class="form-control-plaintext fw-bold">@Model.EmployeeName</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">Leave Type</label>
+                            <p class="form-control-plaintext"><span class="badge bg-info">@Model.LeaveTypeName</span></p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label text-muted">Duration</label>
+                            <p class="form-control-plaintext fw-bold">@Model.Duration days</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-muted">Submitted</label>
+                            <p class="form-control-plaintext">@Model.SubmissionDate.ToString("MMMM dd, yyyy")</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-muted">Current Status</label>
+                            <p class="form-control-plaintext"><span class="badge @Model.StatusBadgeClass">@Model.Status</span></p>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Justification))
+                    {
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Reason</label>
+                            <p class="form-control-plaintext">@Model.Justification</p>
+                        </div>
+                    }
+
+                    <hr />
+
+                    <!-- Override Form -->
+                    <form asp-action="Override" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="requestId" value="@Model.RequestId" />
+
+                        <div class="mb-4">
+                            <label for="newStatus" class="form-label"><i class="bi bi-flag"></i> New Status <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-lg" id="newStatus" name="newStatus" required>
+                                <option value="Approved" selected="@(Model.Status == "Approved")">Approved</option>
+                                <option value="Rejected" selected="@(Model.Status == "Rejected")">Rejected</option>
+                                <option value="Pending" selected="@(Model.Status == "Pending")">Pending</option>
+                                <option value="Cancelled" selected="@(Model.Status == "Cancelled")">Cancelled</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="reason" class="form-label"><i class="bi bi-chat-text"></i> Reason for Override <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="reason" name="reason" rows="3" required placeholder="Explain why you are overriding this decision..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="AllRequests" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Apply Override
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

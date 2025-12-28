@@ -1,0 +1,110 @@
+@model IEnumerable<HRMANGMANGMENT.Models.LeaveEntitlement>
+@{
+    ViewData["Title"] = "Leave Balance";
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-pie-chart"></i> Leave Balance</h2>
+                <p class="mb-0 opacity-75">Your leave entitlements and usage</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="MyLeave" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to My Leave
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Balance Cards -->
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var balance in Model)
+            {
+                var percentage = balance.Entitlement > 0 ? (balance.Remaining / balance.Entitlement) * 100 : 0;
+                var colorClass = percentage > 50 ? "success" : (percentage > 20 ? "warning" : "danger");
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card glass-card hover-lift h-100">
+                        <div class="card-header card-gradient-@colorClass">
+                            <h5 class="mb-0"><i class="bi bi-calendar-check"></i> @balance.LeaveTypeName</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="row">
+                                <div class="col-4">
+                                    <h4 class="text-primary">@balance.Entitlement.ToString("0.#")</h4>
+                                    <small class="text-muted">Allocated</small>
+                                </div>
+                                <div class="col-4">
+                                    <h4 class="text-danger">@balance.Used.ToString("0.#")</h4>
+                                    <small class="text-muted">Used</small>
+                                </div>
+                                <div class="col-4">
+                                    <h4 class="text-@colorClass">@balance.Remaining.ToString("0.#")</h4>
+                                    <small class="text-muted">Remaining</small>
+                                </div>
+                            </div>
+                            <div class="progress mt-4" style="height: 20px;">
+                                <div class="progress-bar bg-danger" style="width: @((balance.Used / balance.Entitlement) * 100)%">
+                                    @((balance.Used / balance.Entitlement * 100).ToString("0"))% Used
+                                </div>
+                                <div class="progress-bar bg-@colorClass" style="width: @percentage%">
+                                    @percentage.ToString("0")% Available
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <a asp-action="Submit" asp-route-type="@balance.LeaveTypeId" class="btn btn-outline-success btn-sm">
+                                <i class="bi bi-plus-circle"></i> Request @balance.LeaveTypeName
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-info text-center py-5">
+                    <i class="bi bi-info-circle" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">No Leave Entitlements</h5>
+                    <p class="text-muted">You have no leave entitlements assigned. Please contact HR to set up your leave allocation.</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Summary Card -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="card glass-card">
+            <div class="card-header card-gradient-info">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Leave Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <h2 class="gradient-text">@Model.Sum(b => b.Entitlement).ToString("0.#")</h2>
+                        <p class="text-muted">Total Allocated</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h2 class="text-danger">@Model.Sum(b => b.Used).ToString("0.#")</h2>
+                        <p class="text-muted">Total Used</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h2 class="text-success">@Model.Sum(b => b.Remaining).ToString("0.#")</h2>
+                        <p class="text-muted">Total Remaining</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h2 class="text-info">@Model.Count()</h2>
+                        <p class="text-muted">Leave Types</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

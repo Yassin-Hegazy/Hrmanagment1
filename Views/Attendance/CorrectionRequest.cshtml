@@ -1,0 +1,82 @@
+@{
+    ViewData["Title"] = "Attendance Correction Request";
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-pencil-square"></i> Attendance Correction Request</h2>
+                <p class="mb-0 opacity-75">Submit a request to correct your attendance record</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="MyAttendance" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to My Attendance
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <strong>Error!</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Correction Request Form -->
+    <div class="card glass-card hover-lift">
+        <div class="card-header card-gradient-warning">
+            <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> Request Details</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="CorrectionRequest" method="post">
+                @Html.AntiForgeryToken()
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="date" class="form-label"><i class="bi bi-calendar"></i> Date</label>
+                        <input type="date" class="form-control" id="date" name="date" required max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <small class="text-muted">Select the date that needs correction</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="correctTime" class="form-label"><i class="bi bi-clock"></i> Correct Time</label>
+                        <input type="time" class="form-control" id="correctTime" name="correctTime" required />
+                        <small class="text-muted">Enter the correct time</small>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="correctionType" class="form-label"><i class="bi bi-card-list"></i> Correction Type</label>
+                    <select class="form-select" id="correctionType" name="correctionType" required>
+                        <option value="">-- Select Type --</option>
+                        <option value="CheckIn">Check In</option>
+                        <option value="CheckOut">Check Out</option>
+                        <option value="Both">Both</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="reason" class="form-label"><i class="bi bi-chat-left-text"></i> Reason</label>
+                    <textarea class="form-control" id="reason" name="reason" rows="4" required 
+                              placeholder="Please explain why you need this correction..."></textarea>
+                    <small class="text-muted">Provide a detailed explanation for the correction request</small>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> 
+                    <strong>Note:</strong> Your request will be reviewed by your manager. You will be notified once it's approved or rejected.
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg hover-lift px-5">
+                        <i class="bi bi-send"></i> Submit Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,316 @@
+@model HRMANGMANGMENT.Models.Employee
+
+@{
+    ViewData["Title"] = "Create Employee";
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-12">
+                <h2><i class="bi bi-person-plus-fill"></i> Create New Employee</h2>
+                <p class="mb-0 opacity-75">Add a new team member to your organization</p>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <strong>Error!</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <form asp-action="Create" method="post">
+        <div class="row stagger-animation">
+            <!-- Personal Information Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card glass-card hover-lift animate-slide-left">
+                    <div class="card-header card-gradient-primary">
+                        <h5 class="mb-0"><i class="bi bi-person-fill"></i> Personal Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="FirstName" class="form-label">
+                                <i class="bi bi-person text-primary"></i> First Name <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="FirstName" class="form-control" placeholder="Enter first name" required />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="LastName" class="form-label">
+                                <i class="bi bi-person text-primary"></i> Last Name <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="LastName" class="form-control" placeholder="Enter last name" required />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="NationalId" class="form-label">
+                                <i class="bi bi-credit-card text-info"></i> National ID <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="NationalId" class="form-control" placeholder="Enter national ID" required />
+                            <span asp-validation-for="NationalId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DateOfBirth" class="form-label">
+                                <i class="bi bi-calendar text-success"></i> Date of Birth
+                            </label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CountryOfBirth" class="form-label">
+                                <i class="bi bi-globe text-warning"></i> Country of Birth
+                            </label>
+                            <input asp-for="CountryOfBirth" class="form-control" placeholder="Enter country" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card glass-card hover-lift animate-slide-right">
+                    <div class="card-header card-gradient-info">
+                        <h5 class="mb-0"><i class="bi bi-telephone-fill"></i> Contact Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">
+                                <i class="bi bi-envelope text-primary"></i> Email
+                            </label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="employee@company.com" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label">
+                                <i class="bi bi-phone text-success"></i> Phone
+                            </label>
+                            <input asp-for="Phone" class="form-control" placeholder="+1 (555) 123-4567" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">
+                                <i class="bi bi-geo-alt text-danger"></i> Address
+                            </label>
+                            <textarea asp-for="Address" class="form-control" rows="3" placeholder="Enter full address"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Authentication & Role Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card glass-card hover-lift animate-slide-right">
+                    <div class="card-header card-gradient-danger">
+                        <h5 class="mb-0"><i class="bi bi-shield-lock-fill"></i> Authentication & Role</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="bi bi-lock text-danger"></i> Password <span class="text-danger">*</span>
+                            </label>
+                            <input type="password" name="password" id="password" class="form-control" 
+                                   placeholder="Enter password" required minlength="6" />
+                            <small class="text-muted">Minimum 6 characters</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">
+                                <i class="bi bi-lock-fill text-danger"></i> Confirm Password <span class="text-danger">*</span>
+                            </label>
+                            <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" 
+                                   placeholder="Confirm password" required minlength="6" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="roleId" class="form-label">
+                                <i class="bi bi-shield-check text-primary"></i> Role <span class="text-danger">*</span>
+                            </label>
+                            <select name="roleId" id="roleId" class="form-select" required>
+                                <option value="">Select Role</option>
+                                @foreach (var role in ViewBag.Roles as IEnumerable<HRMANGMANGMENT.Models.Role>)
+                                {
+                                    <option value="@role.RoleId">@role.RoleName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card glass-card hover-lift animate-scale">
+                    <div class="card-header card-gradient-warning">
+                        <h5 class="mb-0"><i class="bi bi-exclamation-triangle-fill"></i> Emergency Contact</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="EmergencyContactName" class="form-label">
+                                <i class="bi bi-person text-warning"></i> Contact Name
+                            </label>
+                            <input asp-for="EmergencyContactName" class="form-control" placeholder="Emergency contact name" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="EmergencyContactPhone" class="form-label">
+                                <i class="bi bi-phone text-warning"></i> Contact Phone
+                            </label>
+                            <input asp-for="EmergencyContactPhone" class="form-control" placeholder="Emergency contact phone" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Relationship" class="form-label">
+                                <i class="bi bi-people text-info"></i> Relationship
+                            </label>
+                            <input asp-for="Relationship" class="form-control" placeholder="e.g., Spouse, Parent, Sibling" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employment Details Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card glass-card hover-lift animate-scale">
+                    <div class="card-header card-gradient-success">
+                        <h5 class="mb-0"><i class="bi bi-briefcase-fill"></i> Employment Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="DepartmentId" class="form-label">
+                                <i class="bi bi-building text-info"></i> Department ID
+                            </label>
+                            <input asp-for="DepartmentId" type="number" class="form-control" placeholder="Enter department ID" />
+                            <small class="text-muted">Enter the department ID number</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PositionId" class="form-label">
+                                <i class="bi bi-briefcase text-primary"></i> Position
+                            </label>
+                            
+                            <div id="position-select-container">
+                                <div class="input-group">
+                                    <select asp-for="PositionId" class="form-select">
+                                        <option value="">Select Position</option>
+                                        @if (ViewBag.Positions != null)
+                                        {
+                                            foreach (var pos in ViewBag.Positions as IEnumerable<HRMANGMANGMENT.Models.Position>)
+                                            {
+                                                <option value="@pos.PositionId">@pos.PositionTitle</option>
+                                            }
+                                        }
+                                    </select>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePositionInput()">
+                                        <i class="bi bi-plus-lg"></i> New
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="position-input-container" class="d-none">
+                                <div class="input-group">
+                                    <input type="text" name="newPositionTitle" id="newPositionTitle" class="form-control" placeholder="Enter new position title">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePositionInput()">
+                                        <i class="bi bi-list"></i> Select
+                                    </button>
+                                </div>
+                                <small class="text-muted">This will create a new position automatically.</small>
+                            </div>
+                            <span asp-validation-for="PositionId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ManagerId" class="form-label">
+                                <i class="bi bi-person-badge text-warning"></i> Manager ID
+                            </label>
+                            <input asp-for="ManagerId" type="number" class="form-control" placeholder="Enter manager's employee ID" />
+                            <small class="text-muted">Optional - Enter manager's employee ID</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="HireDate" class="form-label">
+                                <i class="bi bi-calendar-check text-success"></i> Hire Date
+                            </label>
+                            <input asp-for="HireDate" type="date" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="EmploymentStatus" class="form-label">
+                                <i class="bi bi-activity text-primary"></i> Employment Status
+                            </label>
+                            <select asp-for="EmploymentStatus" class="form-select">
+                                <option value="">Select Status</option>
+                                <option value="Full-Time">Full-Time</option>
+                                <option value="Part-Time">Part-Time</option>
+                                <option value="Contract">Contract</option>
+                                <option value="Intern">Intern</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Biography Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card glass-card hover-lift animate-fade-in">
+                    <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <h5 class="mb-0"><i class="bi bi-file-text-fill"></i> Biography</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="Biography" class="form-label">
+                                <i class="bi bi-pencil text-primary"></i> Employee Biography
+                            </label>
+                            <textarea asp-for="Biography" class="form-control" rows="4" 
+                                      placeholder="Enter employee biography, background, or additional notes..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="card glass-card animate-scale">
+            <div class="card-body text-center">
+                <button type="submit" class="btn btn-primary btn-lg hover-lift">
+                    <i class="bi bi-save-fill"></i> Create Employee
+                </button>
+                <a asp-action="Index" class="btn btn-secondary btn-lg hover-lift">
+                    <i class="bi bi-x-circle-fill"></i> Cancel
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function togglePositionInput() {
+            var selectContainer = document.getElementById('position-select-container');
+            var inputContainer = document.getElementById('position-input-container');
+            var newPosInput = document.getElementById('newPositionTitle');
+            var select = document.querySelector('select[name="PositionId"]');
+
+            if (selectContainer.classList.contains('d-none')) {
+                // Swithcing back to Select
+                selectContainer.classList.remove('d-none');
+                inputContainer.classList.add('d-none');
+                newPosInput.value = ''; // Clear input
+            } else {
+                // Switching to New Input
+                selectContainer.classList.add('d-none');
+                inputContainer.classList.remove('d-none');
+                select.value = ''; // Clear select
+            }
+        }
+    </script>
+}

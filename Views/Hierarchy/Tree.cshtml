@@ -1,0 +1,426 @@
+@model IEnumerable<HRMANGMANGMENT.Models.HierarchyNode>
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Organization Tree";
+    
+    // Serialize all nodes to JSON for JS processing
+    var allNodes = new List<object>();
+    
+    void FlattenNodes(IEnumerable<HRMANGMANGMENT.Models.HierarchyNode> nodes) {
+        foreach (var node in nodes) {
+            allNodes.Add(new {
+                id = node.Id,
+                name = node.Name,
+                title = node.Title ?? "N/A",
+                type = node.Type,
+                parentId = node.ParentId,
+                level = node.Level,
+                childCount = node.ChildCount,
+                departmentId = node.DepartmentId,
+                departmentName = node.DepartmentName ?? "Unknown",
+                profileImage = node.ProfileImage
+            });
+            if (node.Children != null && node.Children.Any()) {
+                FlattenNodes(node.Children);
+            }
+        }
+    }
+    
+    if (Model != null) {
+        FlattenNodes(Model);
+    }
+    
+    var nodesJson = JsonSerializer.Serialize(allNodes);
+}
+
+<!-- Use D3.js v7 -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<div class="container-fluid mt-4">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-diagram-3"></i> Organization Chart</h2>
+            </div>
+            <div class="col-md-6 text-end">
+                <button class="btn btn-outline-primary me-2" onclick="expandAll()">
+                    <i class="bi bi-arrows-expand"></i> Expand All
+                </button>
+                <button class="btn btn-outline-primary me-2" onclick="collapseAll()">
+                    <i class="bi bi-arrows-collapse"></i> Collapse All
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tree Container -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0" style="height: 85vh; overflow: hidden; background: #f8f9fa; position: relative;">
+            <div id="tree-container" style="width: 100%; height: 100%;"></div>
+            
+            <!-- Zoom Controls Overlay -->
+            <div class="zoom-controls">
+                <button class="btn btn-sm btn-light shadow" onclick="zoomIn()"><i class="bi bi-plus-lg"></i></button>
+                <button class="btn btn-sm btn-light shadow" onclick="zoomReset()"><i class="bi bi-arrows-fullscreen"></i></button>
+                <button class="btn btn-sm btn-light shadow" onclick="zoomOut()"><i class="bi bi-dash-lg"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .zoom-controls {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    /* Node Styles */
+    .node rect {
+        fill: #fff;
+        stroke: #cbd5e1;
+        stroke-width: 2px;
+        rx: 25; /* Rounded Pill */
+        ry: 25;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .node:hover rect {
+        stroke: #3b82f6;
+        fill: #f0f9ff;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    }
+
+    .node text {
+        font-family: 'Segoe UI', sans-serif;
+        pointer-events: none;
+    }
+
+    .node-title {
+        font-size: 14px;
+        font-weight: 600;
+        fill: #1e293b;
+    }
+
+    .node-role {
+        font-size: 11px;
+        fill: #64748b;
+    }
+
+    .node-badge {
+        font-size: 10px;
+        fill: #fff;
+    }
+
+    /* Link Styles */
+    .link {
+        fill: none;
+        stroke: #94a3b8;
+        stroke-width: 2px; /* Thicker "Stalk" */
+        stroke-opacity: 0.6;
+        transition: all 0.5s ease;
+    }
+    
+    /* Department Colors */
+    .dept-node rect { stroke: #2563eb; fill: #eff6ff; }
+    .ceo-node rect { stroke: #7e22ce; fill: #f3e8ff; }
+    .head-node rect { stroke: #059669; fill: #ecfdf5; }
+    
+    /* Foreign Object (Avatar) */
+    .node-avatar-img {
+        border-radius: 50%;
+        border: 2px solid #fff;
+        object-fit: cover;
+    }
+</style>
+
+<script>
+    const rawNodes = @Html.Raw(nodesJson);
+    let svg, g, zoom, root, treeLayout;
+    
+    // Config
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const nodeWidth = 240;
+    const nodeHeight = 70;
+    const duration = 750;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!rawNodes || rawNodes.length === 0) return;
+        
+        const hierarchyData = prepareHierarchyData(rawNodes);
+        if (!hierarchyData) return;
+
+        initTree(hierarchyData);
+    });
+
+    function prepareHierarchyData(nodes) {
+        // Stratify flat list to hierarchy
+        // D3 Stratify expects specific structure
+        try {
+            const root = d3.stratify()
+                .id(d => d.id)
+                .parentId(d => d.parentId)
+                (nodes);
+                
+            return root;
+        } catch (e) {
+            console.error("Hierarchy Error:", e);
+            // Fallback for multi-root or cycles?
+            // Usually indicates bad data, but our SQL fixed it.
+            // If Stratify fails, we might have multiple roots (orphans).
+            // Let's manually pick the CEO tree.
+            const ceo = findCEO(nodes);
+            return buildTreeRecursive(ceo, nodes);
+        }
+    }
+
+    // Fallback recursive builder if stratify fails (e.g. orphans)
+    function buildTreeRecursive(node, allNodes) {
+        if(!node) return null;
+        
+        const children = allNodes.filter(n => n.parentId === node.id);
+        
+        return {
+            id: node.id,
+            data: node, // D3 hierarchy expects 'data' prop usually if manual
+            name: node.name,
+            role: node.title,
+            image: node.profileImage,
+            children: children.map(c => buildTreeRecursive(c, allNodes))
+        };
+    }
+
+    function findCEO(nodes) {
+        return nodes.find(n => n.parentId === null) || nodes[0];
+    }
+
+    function initTree(data) {
+        // If we used manual build, wrap in d3.hierarchy
+        root = (data instanceof d3.hierarchy) ? data : d3.hierarchy(data);
+        
+        const container = document.getElementById('tree-container');
+        
+        // Define zoom behavior first so effective instance is captured in 'zoom' var
+        zoom = d3.zoom()
+            .scaleExtent([0.05, 4])
+            .on("zoom", (e) => {
+                g.attr("transform", e.transform);
+            });
+
+        svg = d3.select("#tree-container").append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .call(zoom) // Attach the defined zoom behavior
+            .on("dblclick.zoom", null) // Disable double click zoom if desired
+            .append("g")
+            .attr("transform", "translate(0, 80)");
+
+        g = svg;
+
+        treeLayout = d3.tree().nodeSize([nodeWidth + 50, nodeHeight + 100]);
+
+        root.x0 = 0;
+        root.y0 = 0;
+
+        // **DEFAULT VIEW**: Fully Expanded
+        // User requested "all of the company like all the hierarchies" on load.
+        // We do NOT collapse by default anymore.
+        
+        update(root);
+        
+        // Initial view: Fit the whole tree to the screen
+        setTimeout(() => zoomToFit(), 500); // Small delay to allow rendering
+    }
+
+    function update(source) {
+        const treeData = treeLayout(root);
+        const nodes = treeData.descendants();
+        const links = treeData.links();
+
+        // --- NODES ---
+        let node = g.selectAll(".node")
+            .data(nodes, d => d.id || (d.id = ++i));
+
+        let nodeEnter = node.enter().append("g")
+            .attr("class", d => "node")
+            .attr("transform", d => `translate(${source.x0},${source.y0})`)
+            .on("click", click);
+
+        // Pill shape
+        nodeEnter.append("rect")
+            .attr("width", nodeWidth)
+            .attr("height", nodeHeight)
+            .attr("x", -nodeWidth / 2)
+            .attr("y", -nodeHeight / 2)
+            .attr("rx", 35)
+            .attr("ry", 35); // Fully rounded pill
+
+        // Name (centered, no avatar)
+        nodeEnter.append("text")
+            .attr("dy", "-5")
+            .attr("x", 0)
+            .attr("text-anchor", "middle")
+            .attr("class", "node-title")
+            .text(d => d.data.name || d.data.data?.name); // Stratify puts props on .data, manual puts on object directly
+
+        // Role (centered, no avatar)
+        nodeEnter.append("text")
+            .attr("dy", "15")
+            .attr("x", 0)
+            .attr("text-anchor", "middle")
+            .attr("class", "node-role")
+            .text(d => (d.data.title || d.data.data?.title));
+
+        // Unread Badge / Collapse icon
+        nodeEnter.append("circle")
+            .attr("class", "toggle-icon")
+            .attr("r", 10)
+            .attr("cx", nodeWidth / 2) 
+            .attr("cy", 0)
+            .style("fill", "#fff")
+            .style("stroke", "#cbd5e1")
+            .style("display", d => d._children ? "block" : "none");
+
+        nodeEnter.append("text")
+            .attr("class", "toggle-text")
+            .attr("dx", nodeWidth / 2)
+            .attr("dy", 4)
+            .attr("text-anchor", "middle")
+            .text("+")
+            .style("display", d => d._children ? "block" : "none")
+            .style("font-size", "14px")
+            .style("pointer-events", "none")
+            .style("fill", "#64748b");
+
+        let nodeUpdate = node.merge(nodeEnter).transition().duration(duration)
+            .attr("transform", d => `translate(${d.x},${d.y})`);
+
+        nodeUpdate.select("rect")
+            .style("stroke", d => d._children ? "#3b82f6" : "#cbd5e1")
+            .style("stroke-width", d => d._children ? "3px" : "2px");
+
+        nodeUpdate.selectAll(".toggle-icon, .toggle-text")
+            .style("display", d => d._children ? "block" : "none");
+
+        let nodeExit = node.exit().transition().duration(duration)
+            .attr("transform", d => `translate(${source.x},${source.y})`)
+            .remove();
+
+        // --- LINKS ---
+        const diagonal = d3.linkVertical()
+            .x(d => d.x)
+            .y(d => d.y);
+
+        let link = g.selectAll(".link")
+            .data(links, d => d.target.id);
+
+        let linkEnter = link.enter().insert("path", "g")
+            .attr("class", "link")
+            .attr("d", d => {
+                const o = {x: source.x0, y: source.y0};
+                return diagonal({source: o, target: o});
+            });
+
+        link.merge(linkEnter).transition().duration(duration)
+            .attr("d", diagonal);
+
+        link.exit().transition().duration(duration)
+            .attr("d", d => {
+                const o = {x: source.x, y: source.y};
+                return diagonal({source: o, target: o});
+            })
+            .remove();
+
+        nodes.forEach(d => {
+            d.x0 = d.x;
+            d.y0 = d.y;
+        });
+    }
+
+    let i = 0;
+    function click(event, d) {
+        if (d.children) {
+            d._children = d.children;
+            d.children = null;
+        } else {
+            d.children = d._children;
+            d._children = null;
+        }
+        update(d);
+    }
+
+    function collapse(d) {
+        if(d.children) {
+            d._children = d.children;
+            d._children.forEach(collapse);
+            d.children = null;
+        }
+    }
+
+    function expand(d) {
+        if(d._children) {
+            d.children = d._children;
+            d._children = null;
+        }
+        if(d.children) d.children.forEach(expand);
+    }
+    
+    function zoomToFit() {
+        const svgEl = document.querySelector('svg');
+        if (!svgEl) return;
+        
+        const bounds = g.node().getBBox();
+        const parent = svgEl.getBoundingClientRect();
+        const fullWidth = parent.width;
+        const fullHeight = parent.height;
+        
+        const width = bounds.width;
+        const height = bounds.height;
+        
+        const midX = bounds.x + width / 2;
+        const midY = bounds.y + height / 2;
+        
+        if (width === 0 || height === 0) return; // Nothing to fit
+        
+        // Scale to fit, with 10% margin
+        const scale = 0.9 / Math.max(width / fullWidth, height / fullHeight);
+        const translate = [fullWidth / 2 - scale * midX, fullHeight / 2 - scale * midY];
+
+        d3.select('svg').transition().duration(750)
+            .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
+    }
+
+    function zoomIn() { d3.select('svg').transition().call(zoom.scaleBy, 1.2); }
+    function zoomOut() { d3.select('svg').transition().call(zoom.scaleBy, 0.8); }
+    function zoomReset() { zoomToFit(); }
+
+    function expandAll() {
+        if(root) {
+            expand(root);
+            update(root);
+            zoomToFit();
+        }
+    }
+
+    function collapseAll() {
+        if(root && root.children) {
+            root.children.forEach(collapse);
+            update(root);
+            zoomToFit();
+        }
+    }
+    
+    // Auto-resize
+    window.addEventListener('resize', () => {
+        d3.select("svg").attr("width", window.innerWidth).attr("height", window.innerHeight);
+    });
+</script>

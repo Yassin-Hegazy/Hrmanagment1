@@ -1,0 +1,292 @@
+@model IEnumerable<HRMANGMANGMENT.Models.Attendance>
+
+@{
+    ViewData["Title"] = "Team Attendance Dashboard";
+    
+    // Calculate statistics
+    var totalEmployees = Model.Select(a => a.EmployeeId).Distinct().Count();
+    var present = Model.Count(a => a.Status == "Present" || a.Status == "Clocked In");
+    var late = Model.Count(a => a.Status == "Late");
+    var absent = totalEmployees - present - late;
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-tachometer-alt"></i> Team Attendance Dashboard</h2>
+            <p class="text-muted">Real-time attendance status for your team</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <button onclick="refreshDashboard()" class="btn btn-outline-primary">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <a asp-action="TeamSummary" class="btn btn-outline-secondary">
+                <i class="fas fa-chart-bar"></i> Summary View
+            </a>
+            <a asp-action="OfflineSyncTool" class="btn btn-outline-warning">
+                <i class="fas fa-wifi"></i> Offline Tool
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card stat-total">
+                <div class="card-body">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>@totalEmployees</h3>
+                        <p>Total Team Members</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card stat-present">
+                <div class="card-body">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>@present</h3>
+                        <p>Present</p>
+                        <small>@(totalEmployees > 0 ? Math.Round((double)present / totalEmployees * 100, 1) : 0)%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card stat-late">
+                <div class="card-body">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>@late</h3>
+                        <p>Late</p>
+                        <small>@(totalEmployees > 0 ? Math.Round((double)late / totalEmployees * 100, 1) : 0)%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card stat-absent">
+                <div class="card-body">
+                    <div class="stat-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>@absent</h3>
+                        <p>Absent</p>
+                        <small>@(totalEmployees > 0 ? Math.Round((double)absent / totalEmployees * 100, 1) : 0)%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance List -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Today's Attendance</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover" id="attendanceTable">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Status</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Duration</th>
+                                <th>Shift</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var attendance in Model.OrderBy(a => a.EmployeeName))
+                            {
+                                <tr class="attendance-row" data-status="@attendance.Status">
+                                    <td>
+                                        <strong>@attendance.EmployeeName</strong>
+                                        <br />
+                                        <small class="text-muted">ID: @attendance.EmployeeId</small>
+                                    </td>
+                                    <td>
+                                        @if (attendance.Status == "Present")
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check"></i> Present
+                                            </span>
+                                        }
+                                        else if (attendance.Status == "Late")
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock"></i> Late
+                                            </span>
+                                        }
+                                        else if (attendance.Status == "Clocked In")
+                                        {
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-sign-in-alt"></i> Clocked In
+                                            </span>
+                                        }
+                                        else if (attendance.Status == "Absent")
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times"></i> Absent
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@attendance.Status</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (attendance.EntryTime.HasValue)
+                                        {
+                                            <span>@attendance.EntryTime.Value.ToString("hh:mm tt")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (attendance.ExitTime.HasValue)
+                                        {
+                                            <span>@attendance.ExitTime.Value.ToString("hh:mm tt")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>@attendance.DurationFormatted</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(attendance.ShiftName))
+                                        {
+                                            <span class="badge bg-light text-dark">@attendance.ShiftName</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No attendance records found for today.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .stat-card {
+            border-left: 4px solid #ddd;
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card .card-body {
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+            opacity: 0.7;
+        }
+        
+        .stat-info h3 {
+            margin: 0;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .stat-info p {
+            margin: 0;
+            color: #666;
+        }
+        
+        .stat-info small {
+            color: #999;
+        }
+        
+        .stat-total {
+            border-left-color: #6c757d;
+        }
+        
+        .stat-total .stat-icon {
+            color: #6c757d;
+        }
+        
+        .stat-present {
+            border-left-color: #28a745;
+        }
+        
+        .stat-present .stat-icon {
+            color: #28a745;
+        }
+        
+        .stat-late {
+            border-left-color: #ffc107;
+        }
+        
+        .stat-late .stat-icon {
+            color: #ffc107;
+        }
+        
+        .stat-absent {
+            border-left-color: #dc3545;
+        }
+        
+        .stat-absent .stat-icon {
+            color: #dc3545;
+        }
+        
+        .attendance-row {
+            animation: fadeIn 0.5s;
+        }
+        
+        @@keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        function refreshDashboard() {
+            location.reload();
+        }
+        
+        // Auto-refresh every 60 seconds
+        setInterval(refreshDashboard, 60000);
+        
+        // Show last updated time
+        const now = new Date();
+        console.log('Dashboard loaded at:', now.toLocaleTimeString());
+    </script>
+}

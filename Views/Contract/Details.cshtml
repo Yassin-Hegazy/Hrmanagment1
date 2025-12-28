@@ -1,0 +1,191 @@
+@model HRMANGMANGMENT.Models.Contract
+
+@{
+    ViewData["Title"] = "Contract Details";
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-12">
+                <h2><i class="bi bi-file-earmark-text-fill"></i> Contract Details</h2>
+                <p class="mb-0 opacity-75">View contract information</p>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-check-circle-fill"></i> <strong>Success!</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row stagger-animation">
+        <!-- Contract Information -->
+        <div class="col-md-6 mb-4">
+            <div class="card glass-card hover-lift animate-slide-left">
+                <div class="card-header card-gradient-primary">
+                    <h5 class="mb-0"><i class="bi bi-file-text-fill"></i> Contract Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="40%"><i class="bi bi-hash text-primary"></i> Contract ID:</th>
+                            <td><strong>#@Model.ContractId</strong></td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-person text-info"></i> Employee:</th>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    @if (!string.IsNullOrEmpty(Model.ProfileImage))
+                                    {
+                                        <img src="~/uploads/profiles/@Model.ProfileImage" alt="@Model.EmployeeName" 
+                                             class="rounded-circle me-2"
+                                             style="width: 32px; height: 32px; object-fit: cover; border: 1px solid var(--german-gold);" />
+                                    }
+                                    @Model.EmployeeName
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-briefcase text-success"></i> Contract Type:</th>
+                            <td>
+                                <span class="badge @(Model.ContractType switch {
+                                    "Full-time" => "bg-success",
+                                    "Part-time" => "bg-info",
+                                    "Consultant" => "bg-warning",
+                                    "Internship" => "bg-secondary",
+                                    _ => "bg-primary"
+                                })">
+                                    @Model.ContractType
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-activity text-warning"></i> Status:</th>
+                            <td>
+                                <span class="badge @(Model.Status switch {
+                                    "Active" => "bg-success",
+                                    "Expired" => "bg-danger",
+                                    "Terminated" => "bg-dark",
+                                    _ => "bg-secondary"
+                                })">
+                                    @Model.Status
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dates & Duration -->
+        <div class="col-md-6 mb-4">
+            <div class="card glass-card hover-lift animate-slide-right">
+                <div class="card-header card-gradient-info">
+                    <h5 class="mb-0"><i class="bi bi-calendar-fill"></i> Dates & Duration</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="40%"><i class="bi bi-calendar-check text-success"></i> Start Date:</th>
+                            <td>@Model.StartDate.ToString("MMMM dd, yyyy")</td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-calendar-x text-danger"></i> End Date:</th>
+                            <td>
+                                @if (Model.EndDate.HasValue)
+                                {
+                                    @Model.EndDate.Value.ToString("MMMM dd, yyyy")
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Permanent Contract</span>
+                                }
+                            </td>
+                        </tr>
+                        @if (Model.EndDate.HasValue)
+                        {
+                            <tr>
+                                <th><i class="bi bi-hourglass-split text-warning"></i> Days Remaining:</th>
+                                <td>
+                                    @if (Model.DaysRemaining.HasValue)
+                                    {
+                                        if (Model.DaysRemaining.Value > 0)
+                                        {
+                                            <span class="@(Model.IsExpiringSoon ? "text-warning fw-bold" : "")">
+                                                @Model.DaysRemaining.Value days
+                                                @if (Model.IsExpiringSoon)
+                                                {
+                                                    <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+                                                }
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-danger fw-bold">Expired</span>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        @if (Model.RenewalDate.HasValue)
+                        {
+                            <tr>
+                                <th><i class="bi bi-arrow-repeat text-info"></i> Last Renewed:</th>
+                                <td>@Model.RenewalDate.Value.ToString("MMMM dd, yyyy")</td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terms & Conditions -->
+        @if (!string.IsNullOrEmpty(Model.Terms))
+        {
+            <div class="col-md-12 mb-4">
+                <div class="card glass-card hover-lift animate-scale">
+                    <div class="card-header card-gradient-warning">
+                        <h5 class="mb-0"><i class="bi bi-file-text"></i> Terms & Conditions</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0">@Model.Terms</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="card glass-card animate-scale">
+        <div class="card-body text-center">
+            <a asp-action="Edit" asp-route-id="@Model.ContractId" class="btn btn-warning btn-lg hover-lift">
+                <i class="bi bi-pencil-fill"></i> Edit Contract
+            </a>
+            
+            @if (Model.Status == "Active" && Model.EndDate.HasValue && Model.IsExpiringSoon)
+            {
+                <a asp-action="Renew" asp-route-id="@Model.ContractId" class="btn btn-info btn-lg hover-lift">
+                    <i class="bi bi-arrow-repeat"></i> Renew Contract
+                </a>
+            }
+            
+            @if (Model.Status == "Active")
+            {
+                <a asp-action="Terminate" asp-route-id="@Model.ContractId" class="btn btn-danger btn-lg hover-lift">
+                    <i class="bi bi-x-circle-fill"></i> Terminate Contract
+                </a>
+            }
+            
+            <a asp-action="Index" class="btn btn-secondary btn-lg hover-lift">
+                <i class="bi bi-arrow-left-circle-fill"></i> Back to List
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Modals removed - Replaced by dedicated Renew/Terminate pages -->

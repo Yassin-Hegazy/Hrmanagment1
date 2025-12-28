@@ -1,0 +1,146 @@
+@{
+    ViewData["Title"] = "Database Connection Test";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-database"></i> Database Connection Diagnostics</h4>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i> <strong>Error:</strong> @ViewBag.Error
+                        </div>
+                    }
+                    else
+                    {
+                        <h5>Connection String</h5>
+                        <div class="alert alert-info">
+                            <code>@ViewBag.ConnectionString</code>
+                        </div>
+
+                        <hr />
+
+                        <h5>Connection Test</h5>
+                        @if (ViewBag.ConnectionSuccess == true)
+                        {
+                            <div class="alert alert-success">
+                                <i class="bi bi-check-circle"></i> <strong>Success!</strong> @ViewBag.ConnectionMessage
+                            </div>
+
+                            <h5>Database Verification</h5>
+                            @if (ViewBag.DatabaseExists == true)
+                            {
+                                <div class="alert alert-success">
+                                    <i class="bi bi-check-circle"></i> <strong>Success!</strong> @ViewBag.DatabaseMessage
+                                </div>
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> Your database is properly configured and ready to use!
+                                    <br /><br />
+                                    <a href="@Url.Action("Index", "Employee")" class="btn btn-primary">
+                                        <i class="bi bi-people"></i> Go to Employee Management
+                                    </a>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-exclamation-triangle"></i> <strong>Warning:</strong> @ViewBag.DatabaseMessage
+                                    <br /><br />
+                                    Please make sure you have created the HRFINAL database and run all the table creation scripts.
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="alert alert-danger">
+                                <i class="bi bi-x-circle"></i> <strong>Connection Failed!</strong>
+                                <br />@ViewBag.ConnectionMessage
+                            </div>
+
+                            <div class="card mt-3">
+                                <div class="card-header bg-warning">
+                                    <h6 class="mb-0">Troubleshooting Steps</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ol>
+                                        <li><strong>Check SQL Server Service:</strong>
+                                            <ul>
+                                                <li>Open Services (Win + R, type "services.msc")</li>
+                                                <li>Find "SQL Server (SQLEXPRESS)" or your instance name</li>
+                                                <li>Make sure it's running</li>
+                                            </ul>
+                                        </li>
+                                        <li><strong>Verify Instance Name:</strong>
+                                            <ul>
+                                                <li>Common names: <code>localhost\SQLEXPRESS</code>, <code>(localdb)\MSSQLLocalDB</code></li>
+                                                <li>Check SQL Server Configuration Manager for your instance name</li>
+                                            </ul>
+                                        </li>
+                                        <li><strong>Update Connection String:</strong>
+                                            <ul>
+                                                <li>Edit <code>appsettings.json</code></li>
+                                                <li>Update the "Server" part to match your SQL Server instance</li>
+                                            </ul>
+                                        </li>
+                                        <li><strong>Enable TCP/IP:</strong>
+                                            <ul>
+                                                <li>Open SQL Server Configuration Manager</li>
+                                                <li>Enable TCP/IP protocol for your instance</li>
+                                                <li>Restart SQL Server service</li>
+                                            </ul>
+                                        </li>
+                                    </ol>
+
+                                    <h6 class="mt-3">Common Connection Strings:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Type</th>
+                                                    <th>Connection String</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>SQL Express</td>
+                                                    <td><code>Server=localhost\SQLEXPRESS;Database=HRFINAL;Trusted_Connection=True;TrustServerCertificate=True</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>LocalDB</td>
+                                                    <td><code>Server=(localdb)\MSSQLLocalDB;Database=HRFINAL;Trusted_Connection=True;TrustServerCertificate=True</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Default Instance</td>
+                                                    <td><code>Server=localhost;Database=HRFINAL;Trusted_Connection=True;TrustServerCertificate=True</code></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    <hr />
+                    <div class="text-center">
+                        <a href="@Url.Action("TestConnection")" class="btn btn-primary">
+                            <i class="bi bi-arrow-clockwise"></i> Test Again
+                        </a>
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                            <i class="bi bi-house"></i> Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+}

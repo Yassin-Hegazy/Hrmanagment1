@@ -1,0 +1,620 @@
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - خليها على الله HRMS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-black: #1a1a1a;
+            --primary-red: #c41e3a;
+            --primary-gold: #d4a017;
+            --accent-gold: #f5c842;
+            --dark-surface: #2d2d2d;
+            --light-bg: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--light-bg);
+            /* Page transition animation */
+            animation: pageSlideIn 0.6s ease-out;
+        }
+
+        /* Page transition effect - slides in from right */
+        @@keyframes pageSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Link click transition - add class via JS before navigation */
+        .page-exit {
+            animation: pageSlideOut 0.3s ease-in forwards;
+        }
+
+        @@keyframes pageSlideOut {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+        }
+
+        /* Left Side - Branding */
+        .brand-side {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-black) 0%, var(--dark-surface) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated gradient border */
+        .brand-side::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-black), var(--primary-red), var(--primary-gold), var(--primary-red), var(--primary-black));
+            background-size: 200% 100%;
+            animation: gradientSlide 3s ease infinite;
+        }
+
+        .brand-side::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-gold), var(--primary-red), var(--primary-black), var(--primary-red), var(--primary-gold));
+            background-size: 200% 100%;
+            animation: gradientSlide 3s ease infinite reverse;
+        }
+
+        @@keyframes gradientSlide {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--primary-gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 12s; }
+        .particle:nth-child(2) { left: 20%; animation-delay: 2s; animation-duration: 14s; }
+        .particle:nth-child(3) { left: 30%; animation-delay: 4s; animation-duration: 16s; }
+        .particle:nth-child(4) { left: 50%; animation-delay: 1s; animation-duration: 13s; }
+        .particle:nth-child(5) { left: 70%; animation-delay: 3s; animation-duration: 15s; }
+        .particle:nth-child(6) { left: 85%; animation-delay: 5s; animation-duration: 11s; }
+
+        @@keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Logo with pulse and float */
+        .brand-logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--accent-gold) 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 60px rgba(212, 160, 23, 0.2);
+            animation: logoFloat 4s ease-in-out infinite, logoPulse 2s ease-in-out infinite;
+            position: relative;
+        }
+
+        .brand-logo::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 27px;
+            background: linear-gradient(135deg, var(--primary-gold), var(--primary-red), var(--primary-gold));
+            z-index: -1;
+            animation: rotateBorder 4s linear infinite;
+        }
+
+        @@keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @@keyframes logoPulse {
+            0%, 100% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(212, 160, 23, 0.2); }
+            50% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 60px rgba(212, 160, 23, 0.4); }
+        }
+
+        @@keyframes rotateBorder {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .brand-logo i {
+            font-size: 48px;
+            color: var(--primary-black);
+        }
+
+        .brand-title {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .brand-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            text-align: center;
+            max-width: 300px;
+            line-height: 1.6;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Right Side - Form */
+        .form-side {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: white;
+        }
+
+        .login-form-container {
+            width: 100%;
+            max-width: 400px;
+            animation: slideInRight 0.6s ease-out;
+        }
+
+        @@keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .form-header {
+            margin-bottom: 40px;
+        }
+
+        .form-header h1 {
+            color: var(--primary-black);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .form-header p {
+            color: #6c757d;
+            font-size: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            animation: fadeInUp 0.6s ease-out both;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+
+        .form-label {
+            display: block;
+            color: var(--primary-black);
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-control:hover {
+            border-color: #dee2e6;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .form-check-input {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-red);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .form-check-input:hover {
+            transform: scale(1.1);
+        }
+
+        .form-check-label {
+            color: #6c757d;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-black);
+            color: var(--primary-gold);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out 0.5s both;
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-login:hover {
+            background: var(--dark-surface);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-login:hover::before {
+            left: 100%;
+        }
+
+        .btn-login:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-login i {
+            transition: transform 0.3s ease;
+        }
+
+        .btn-login:hover i {
+            transform: translateX(5px);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            color: #adb5bd;
+            font-size: 13px;
+            animation: fadeIn 0.6s ease-out 0.6s both;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e9ecef;
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        .register-link {
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+            animation: fadeInUp 0.6s ease-out 0.7s both;
+        }
+
+        .register-link a {
+            color: var(--primary-red);
+            font-weight: 600;
+            text-decoration: none;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .register-link a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-red);
+            transition: width 0.3s ease;
+        }
+
+        .register-link a:hover::after {
+            width: 100%;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: shake 0.5s ease-out;
+        }
+
+        @@keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .alert-danger {
+            background: #fff5f5;
+            color: var(--primary-red);
+            border: 1px solid rgba(196, 30, 58, 0.2);
+        }
+
+        .alert-success {
+            background: #fffef0;
+            color: #856404;
+            border: 1px solid rgba(212, 160, 23, 0.3);
+            animation: bounceIn 0.5s ease-out;
+        }
+
+        @@keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Responsive */
+        @@media (max-width: 992px) {
+            body {
+                flex-direction: column;
+            }
+            .brand-side {
+                padding: 40px 20px;
+            }
+
+
+        /* Password Toggle */
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            cursor: pointer;
+            z-index: 10;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-black);
+        }
+    </style>
+</head>
+<body>
+    <div class="brand-side">
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        <div class="brand-logo">
+            <i class="bi bi-building"></i>
+        </div>
+        <h1 class="brand-title">خليها على الله</h1>
+        <p class="brand-subtitle">Streamline your workforce management with our comprehensive HR solution</p>
+    </div>
+
+    <div class="form-side">
+        <div class="login-form-container">
+            <div class="form-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to continue to your dashboard</p>
+            </div>
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            <form asp-action="Login" method="post">
+                <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control" name="email" 
+                           placeholder="Enter your email" required autofocus />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <div class="password-container">
+                        <input type="password" class="form-control" name="password" id="password"
+                               style="padding-right: 40px;" placeholder="Enter your password" required />
+                        <i class="bi bi-eye password-toggle" id="togglePassword"></i>
+                    </div>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe" />
+                    <label class="form-check-label" for="rememberMe">
+                        Remember me for 30 days
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Sign In
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>or</span>
+            </div>
+
+            <p class="register-link">
+                Don't have an account? <a asp-action="Register">Create Account</a>
+            </p>
+            <p class="register-link" style="margin-top: 10px;">
+                Existing employee? <a asp-action="ActivateAccount">Activate Account</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Page transition effect
+        document.querySelectorAll('.register-link a, .transition-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                document.body.classList.add('page-exit');
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 300);
+            });
+        });
+
+        // Password Toggle Logic
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+
+        togglePassword.addEventListener('click', function (e) {
+            // toggle the type attribute
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            
+            // toggle the eye icon
+            this.classList.toggle('bi-eye');
+            this.classList.toggle('bi-eye-slash');
+        });
+    </script>
+</body>
+</html>

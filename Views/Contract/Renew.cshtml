@@ -1,0 +1,46 @@
+@model HRMANGMANGMENT.Models.Contract
+
+@{
+    ViewData["Title"] = "Renew Contract";
+}
+
+<div class="container mt-4 animate-fade-in">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card glass-card hover-lift">
+                <div class="card-header card-gradient-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-arrow-repeat"></i> Renew Contract</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Renewing contract for: <strong>@Model.EmployeeName</strong> (ID: @Model.EmployeeId)
+                        <br>
+                        Current End Date: <strong>@(Model.EndDate?.ToShortDateString() ?? "N/A")</strong>
+                    </div>
+
+                    <form asp-action="Renew" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="contractId" value="@Model.ContractId" />
+                        
+                        <div class="mb-4">
+                            <label class="form-label">New End Date</label>
+                            <input type="date" name="newEndDate" class="form-control" required 
+                                   min="@(Model.EndDate?.AddDays(1).ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))"
+                                   value="@(Model.EndDate?.AddYears(1).ToString("yyyy-MM-dd") ?? DateTime.Now.AddYears(1).ToString("yyyy-MM-dd"))" />
+                            <div class="form-text">Select the new expiration date for this contract.</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Details" asp-route-id="@Model.ContractId" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-info text-white">
+                                <i class="bi bi-save"></i> Confirm Renewal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

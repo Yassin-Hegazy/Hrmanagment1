@@ -1,0 +1,99 @@
+@{
+    ViewData["Title"] = "Offline Sync Simulator";
+}
+
+<div class="container mt-4 animate-fade-in">
+    <div class="card glass-card">
+        <div class="card-header card-gradient-warning">
+            <h3 class="mb-0"><i class="bi bi-wifi-off"></i> Offline Sync Simulator</h3>
+            <p class="text-white-50 mb-0">Test the "Offline Attendance Re-sync" functionality manually.</p>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> This tool simulates a mobile device pushing stored offline records when connectivity is restored.
+            </div>
+
+            <form id="offlineSyncForm">
+                <div class="mb-3">
+                    <label class="form-label">Employee ID</label>
+                    <input type="number" class="form-control" id="employeeId" required placeholder="e.g. 1042">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Recorded Time (Offline)</label>
+                    <input type="datetime-local" class="form-control" id="clockTime" required>
+                    <div class="form-text">The time when the user actually clicked the button while offline.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Action Type</label>
+                    <select class="form-select" id="type" required>
+                        <option value="IN">Clock In (IN)</option>
+                        <option value="OUT">Clock Out (OUT)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-warning w-100">
+                    <i class="bi bi-cloud-upload"></i> Simulate Sync
+                </button>
+            </form>
+
+            <div id="resultArea" class="mt-4" style="display:none;">
+                <h5>Result:</h5>
+                <pre id="jsonResult" class="bg-light p-3 border rounded"></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('offlineSyncForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const employeeId = document.getElementById('employeeId').value;
+            const clockTime = document.getElementById('clockTime').value;
+            const type = document.getElementById('type').value;
+            const resultArea = document.getElementById('resultArea');
+            const jsonResult = document.getElementById('jsonResult');
+
+            const payload = {
+                EmployeeId: parseInt(employeeId),
+                ClockTime: clockTime,
+                Type: type
+            };
+
+            jsonResult.textContent = "Sending...";
+            resultArea.style.display = 'block';
+
+            try {
+                const response = await fetch('/Attendance/SyncOffline', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    jsonResult.className = "bg-success text-white p-3 border rounded";
+                    jsonResult.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    jsonResult.className = "bg-danger text-white p-3 border rounded";
+                    jsonResult.textContent = "Error " + response.status + ": " + JSON.stringify(data, null, 2);
+                }
+
+            } catch (error) {
+                jsonResult.className = "bg-danger text-white p-3 border rounded";
+                jsonResult.textContent = "Network Error: " + error.message;
+            }
+        });
+        
+        // Set default datetime to now
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('clockTime').value = now.toISOString().slice(0,16);
+    </script>
+}

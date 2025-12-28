@@ -1,0 +1,126 @@
+@{
+    ViewData["Title"] = "Assign Mission";
+    var employees = ViewBag.Employees as IEnumerable<HRMANGMANGMENT.Models.Employee>;
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-send-plus"></i> Assign Mission</h2>
+                <p class="mb-0 opacity-75">Assign a new mission to an employee</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Index" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to All Missions
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card glass-card hover-lift">
+                <div class="card-header card-gradient-success">
+                    <h5 class="mb-0"><i class="bi bi-pencil-square"></i> Mission Details</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Assign" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="employeeId" class="form-label"><i class="bi bi-person"></i> Employee <span class="text-danger">*</span></label>
+                                <select class="form-select" id="employeeId" name="employeeId" required>
+                                    <option value="">-- Select Employee --</option>
+                                    @if (employees != null)
+                                    {
+                                        @foreach (var emp in employees)
+                                        {
+                                            <option value="@emp.EmployeeId">@emp.FullName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="managerId" class="form-label"><i class="bi bi-person-badge"></i> Reporting Manager <span class="text-danger">*</span></label>
+                                <select class="form-select" id="managerId" name="managerId" required>
+                                    <option value="">-- Select Manager --</option>
+                                    @if (employees != null)
+                                    {
+                                        @foreach (var emp in employees)
+                                        {
+                                            <option value="@emp.EmployeeId">@emp.FullName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="destination" class="form-label"><i class="bi bi-geo-alt"></i> Destination <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="destination" name="destination" required 
+                                   placeholder="e.g. New York Office, Client Site - Munich" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="startDate" class="form-label"><i class="bi bi-calendar-event"></i> Start Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="startDate" name="startDate" required 
+                                       min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="endDate" class="form-label"><i class="bi bi-calendar-event"></i> End Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="endDate" name="endDate" required 
+                                       min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="durationDisplay" class="form-label"><i class="bi bi-clock"></i> Duration</label>
+                            <input type="text" class="form-control" id="durationDisplay" readonly placeholder="Select dates to calculate" />
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-send"></i> Assign Mission
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('startDate').addEventListener('change', calculateDuration);
+        document.getElementById('endDate').addEventListener('change', calculateDuration);
+
+        function calculateDuration() {
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+
+            if (startDate && endDate && endDate >= startDate) {
+                const diffTime = Math.abs(endDate - startDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                document.getElementById('durationDisplay').value = diffDays + ' day(s)';
+            } else {
+                document.getElementById('durationDisplay').value = '';
+            }
+        }
+    </script>
+}

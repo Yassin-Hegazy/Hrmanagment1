@@ -1,0 +1,98 @@
+@model HRMANGMANGMENT.Models.Department
+
+@{
+    ViewData["Title"] = "Edit Department";
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-12">
+                <h2><i class="bi bi-pencil-square"></i> Edit Department</h2>
+                <p class="mb-0 opacity-75">Update department information</p>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <strong>Error!</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="DepartmentId" />
+        
+        <div class="row stagger-animation">
+            <!-- Department Information Card -->
+            <div class="col-md-8 offset-md-2 mb-4">
+                <div class="card glass-card hover-lift animate-scale">
+                    <div class="card-header card-gradient-warning">
+                        <h5 class="mb-0"><i class="bi bi-building-fill"></i> Department Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="bi bi-hash text-primary"></i> Department ID
+                            </label>
+                            <input type="text" class="form-control" value="@Model.DepartmentId" disabled />
+                            <small class="text-muted">Department ID cannot be changed</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="DepartmentName" class="form-label">
+                                <i class="bi bi-building text-primary"></i> Department Name <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="DepartmentName" class="form-control" placeholder="Enter department name" required />
+                            <span asp-validation-for="DepartmentName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Purpose" class="form-label">
+                                <i class="bi bi-info-circle text-info"></i> Purpose
+                            </label>
+                            <textarea asp-for="Purpose" class="form-control" rows="4" 
+                                      placeholder="Describe the department's purpose and responsibilities..."></textarea>
+                            <span asp-validation-for="Purpose" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="DepartmentHeadId" class="form-label">
+                                <i class="bi bi-person-badge text-warning"></i> Department Head
+                            </label>
+                            <select asp-for="DepartmentHeadId" asp-items="ViewBag.Employees" class="form-select">
+                                <option value="">-- Select Department Head (Optional) --</option>
+                            </select>
+                            <small class="text-muted">
+                                <i class="bi bi-lightbulb"></i> Select an employee to be the head of this department
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card glass-card animate-scale">
+                    <div class="card-body text-center">
+                        <button type="submit" class="btn btn-warning btn-lg hover-lift">
+                            <i class="bi bi-save-fill"></i> Update Department
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.DepartmentId" class="btn btn-secondary btn-lg hover-lift">
+                            <i class="bi bi-x-circle-fill"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,140 @@
+@using HRMANGMANGMENT.Services
+@model IEnumerable<SentNotificationInfo>
+@{
+    ViewData["Title"] = "Sent History";
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-clock-history"></i> Sent History</h2>
+                <p class="mb-0 opacity-75">View all notifications you have sent</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Index" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to Notifications
+                </a>
+                <a asp-action="SendToTeam" class="btn btn-success hover-lift">
+                    <i class="bi bi-send"></i> Send New
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Sent Notifications List -->
+    <div class="card glass-card">
+        <div class="card-header card-gradient-info">
+            <h5 class="mb-0"><i class="bi bi-send-check"></i> Your Sent Notifications</h5>
+        </div>
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 15%;">Date Sent</th>
+                                <th style="width: 12%;">Type</th>
+                                <th>Message</th>
+                                <th style="width: 10%;">Urgency</th>
+                                <th style="width: 12%;">Recipients</th>
+                                <th style="width: 10%;">Read</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var urgencyClass = item.Urgency switch
+                                {
+                                    "High" => "bg-danger",
+                                    "Medium" => "bg-warning text-dark",
+                                    "Low" => "bg-secondary",
+                                    _ => "bg-info"
+                                };
+                                var typeIcon = item.NotificationType switch
+                                {
+                                    "Announcement" => "bi-megaphone",
+                                    "Team Message" => "bi-people",
+                                    "Leave Approval" => "bi-calendar-check",
+                                    _ => "bi-bell"
+                                };
+                                <tr>
+                                    <td>
+                                        <small class="text-muted">
+                                            @item.SentAt.ToString("MMM dd, yyyy")<br/>
+                                            <strong>@item.SentAt.ToString("HH:mm")</strong>
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark">
+                                            <i class="bi @typeIcon"></i> @item.NotificationType
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (item.MessageContent.Length > 100)
+                                        {
+                                            <span title="@item.MessageContent">
+                                                @item.MessageContent.Substring(0, 100)...
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            @item.MessageContent
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge @urgencyClass">@item.Urgency</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary rounded-pill">
+                                            @item.RecipientCount
+                                        </span>
+                                        <small class="text-muted d-block">recipients</small>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.RecipientCount > 0)
+                                        {
+                                            var readPercentage = (item.ReadCount * 100) / item.RecipientCount;
+                                            <div class="progress" style="height: 20px;" title="@item.ReadCount of @item.RecipientCount read">
+                                                <div class="progress-bar bg-success" role="progressbar" 
+                                                     style="width: @readPercentage%;" 
+                                                     aria-valuenow="@readPercentage" aria-valuemin="0" aria-valuemax="100">
+                                                    @item.ReadCount/@item.RecipientCount
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-send-slash" style="font-size: 4rem; color: #ccc;"></i>
+                    <h5 class="mt-3 text-muted">No Sent Notifications</h5>
+                    <p class="text-muted">You haven't sent any notifications yet.</p>
+                    <a asp-action="SendToTeam" class="btn btn-success">
+                        <i class="bi bi-send"></i> Send Your First Notification
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

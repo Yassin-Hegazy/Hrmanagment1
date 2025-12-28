@@ -1,0 +1,164 @@
+@{
+    ViewData["Title"] = "Assign Shift";
+    var shifts = ViewBag.Shifts as IEnumerable<HRMANGMANGMENT.Models.ShiftSchedule>;
+    var employees = ViewBag.Employees as IEnumerable<HRMANGMANGMENT.Models.Employee>;
+    var departments = ViewBag.Departments as IEnumerable<HRMANGMANGMENT.Models.Department>;
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-calendar-check-fill"></i> Assign Shift</h2>
+                <p class="mb-0 opacity-75">Assign shifts to departments or individual employees</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Index" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to Shifts
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-check-circle-fill"></i> <strong>Success!</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <strong>Error!</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Assignment Form -->
+    <div class="card glass-card hover-lift">
+        <div class="card-header card-gradient-primary">
+            <h5 class="mb-0"><i class="bi bi-plus-square"></i> New Assignment</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Assign" method="post">
+                @Html.AntiForgeryToken()
+                
+                <!-- Assignment Type Selection -->
+                <div class="mb-4">
+                    <label class="form-label"><strong>Assign To:</strong></label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="assignmentType" id="assignDepartment" value="Department" checked>
+                        <label class="btn btn-outline-primary" for="assignDepartment">
+                            <i class="bi bi-building"></i> Department
+                        </label>
+
+                        <input type="radio" class="btn-check" name="assignmentType" id="assignEmployee" value="Employee">
+                        <label class="btn btn-outline-primary" for="assignEmployee">
+                            <i class="bi bi-person"></i> Employee
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Department Selection -->
+                <div class="mb-3" id="departmentSection">
+                    <label for="departmentId" class="form-label"><i class="bi bi-building"></i> Select Department</label>
+                    <select class="form-select" id="departmentId" name="departmentId">
+                        <option value="">-- Select Department --</option>
+                        @if (departments != null)
+                        {
+                            @foreach (var dept in departments)
+                            {
+                                <option value="@dept.DepartmentId">@dept.DepartmentName</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Employee Selection -->
+                <div class="mb-3 d-none" id="employeeSection">
+                    <label for="employeeId" class="form-label"><i class="bi bi-person"></i> Select Employee</label>
+                    <select class="form-select" id="employeeId" name="employeeId">
+                        <option value="">-- Select Employee --</option>
+                        @if (employees != null)
+                        {
+                            @foreach (var emp in employees)
+                            {
+                                <option value="@emp.EmployeeId">@emp.FullName (@emp.DepartmentName)</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Shift Selection -->
+                <div class="mb-3">
+                    <label for="shiftId" class="form-label"><i class="bi bi-clock"></i> Select Shift</label>
+                    <select class="form-select" id="shiftId" name="shiftId" required>
+                        <option value="">-- Select Shift --</option>
+                        @if (shifts != null)
+                        {
+                            @foreach (var shift in shifts)
+                            {
+                                <option value="@shift.ShiftId">
+                                    @shift.Name (@shift.StartTime.ToString(@"hh\:mm") - @shift.EndTime.ToString(@"hh\:mm"))
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Date Range -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="startDate" class="form-label"><i class="bi bi-calendar-check"></i> Start Date</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="endDate" class="form-label"><i class="bi bi-calendar-x"></i> End Date (Optional)</label>
+                        <input type="date" class="form-control" id="endDate" name="endDate" />
+                        <small class="text-muted">Leave blank for permanent assignment</small>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg hover-lift">
+                        <i class="bi bi-check-circle"></i> Assign Shift
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Toggle between Department and Employee selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const departmentRadio = document.getElementById('assignDepartment');
+            const employeeRadio = document.getElementById('assignEmployee');
+            const departmentSection = document.getElementById('departmentSection');
+            const employeeSection = document.getElementById('employeeSection');
+
+            function updateSelection() {
+                if (departmentRadio.checked) {
+                    departmentSection.classList.remove('d-none');
+                    employeeSection.classList.add('d-none');
+                    document.getElementById('employeeId').removeAttribute('required');
+                    document.getElementById('departmentId').setAttribute('required', 'required');
+                } else {
+                    departmentSection.classList.add('d-none');
+                    employeeSection.classList.remove('d-none');
+                    document.getElementById('departmentId').removeAttribute('required');
+                    document.getElementById('employeeId').setAttribute('required', 'required');
+                }
+            }
+
+            departmentRadio.addEventListener('change', updateSelection);
+            employeeRadio.addEventListener('change', updateSelection);
+            updateSelection();
+        });
+    </script>
+}

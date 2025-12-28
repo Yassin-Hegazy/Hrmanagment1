@@ -1,0 +1,226 @@
+@model IEnumerable<HRMANGMANGMENT.Models.Employee>
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Employees";
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header with Gradient -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-people-fill"></i> Employee Management</h2>
+                <p class="mb-0 opacity-75">Manage your workforce efficiently</p>
+            </div>
+            <div class="col-md-6 text-end">
+                @if (User.IsInRole("SuperAdmin"))
+                {
+                    <a asp-action="Create" class="btn btn-light btn-lg hover-lift">
+                        <i class="bi bi-plus-circle"></i> Add New Employee
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-check-circle-fill"></i> <strong>Success!</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <strong>Error!</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Search Card -->
+    <div class="card glass-card mb-4 hover-lift animate-scale">
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-3">
+                <div class="col-md-10">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search text-primary"></i>
+                        </span>
+                        <input type="text" name="searchTerm" class="form-control border-start-0" 
+                               placeholder="Search employees by name, email, or department..." 
+                               value="@ViewBag.SearchTerm">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Employee Table Card -->
+    <div class="card glass-card hover-lift animate-fade-in">
+        <div class="card-header card-gradient-primary">
+            <h5 class="mb-0"><i class="bi bi-table"></i> Employee Directory</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-hash"></i> ID</th>
+                            <th><i class="bi bi-person"></i> Name</th>
+                            <th><i class="bi bi-envelope"></i> Email</th>
+                            <th><i class="bi bi-telephone"></i> Phone</th>
+                            <th><i class="bi bi-building"></i> Department</th>
+                            <th><i class="bi bi-briefcase"></i> Position</th>
+                            <th><i class="bi bi-activity"></i> Status</th>
+                            <th><i class="bi bi-gear"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="stagger-animation">
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var employee in Model)
+                            {
+                                <tr>
+                                    <td><strong class="text-primary">#@employee.EmployeeId</strong></td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            @if (!string.IsNullOrEmpty(employee.ProfileImage))
+                                            {
+                                                <img src="~/uploads/profiles/@employee.ProfileImage" 
+                                                     alt="@employee.FullName" 
+                                                     class="rounded-circle me-2"
+                                                     style="width: 40px; height: 40px; object-fit: cover; border: 2px solid var(--german-gold);"
+                                                     onerror="this.onerror=null; this.src='/uploads/profiles/default-avatar.png';" />
+                                            }
+                                            else
+                                            {
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center" 
+                                                     style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--german-gold), var(--dark-gold)); border: 2px solid var(--german-black);">
+                                                    <i class="bi bi-person-fill" style="font-size: 1.2rem; color: var(--german-black);"></i>
+                                                </div>
+                                            }
+                                            <div>
+                                                <strong>@employee.FullName</strong>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(employee.Email))
+                                        {
+                                            <a href="mailto:@employee.Email" class="text-decoration-none">
+                                                <i class="bi bi-envelope-fill text-info"></i> @employee.Email
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(employee.Phone))
+                                        {
+                                            <i class="bi bi-phone-fill text-success"></i> @employee.Phone
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            <i class="bi bi-building"></i> @employee.DepartmentName
+                                        </span>
+                                    </td>
+                                    <td>@employee.PositionTitle</td>
+                                    <td>
+                                        @if (employee.IsActive)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle-fill"></i> Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x-circle-fill"></i> Inactive
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@employee.EmployeeId" 
+                                               class="btn btn-sm btn-info" title="View Details">
+                                                <i class="bi bi-eye-fill"></i>
+                                            </a>
+                                            @{
+                                                var isOwnProfile = User.FindFirst(ClaimTypes.NameIdentifier)?.Value == employee.EmployeeId.ToString();
+                                                var isHRAdmin = User.IsInRole("HRAdmin") || User.IsInRole("HR Admin");
+                                                var isSuperAdmin = User.IsInRole("SuperAdmin");
+                                            }
+                                            @if ((isHRAdmin || isOwnProfile) && (!isSuperAdmin || isOwnProfile))
+                                            {
+                                                <a asp-action="Edit" asp-route-id="@employee.EmployeeId" 
+                                                   class="btn btn-sm btn-warning" title="Edit">
+                                                    <i class="bi bi-pencil-fill"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-5">
+                                    <div class="animate-float">
+                                        <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+                                        <p class="text-muted mt-3">No employees found</p>
+                                        @if (User.IsInRole("SuperAdmin"))
+                                        {
+                                            <a asp-action="Create" class="btn btn-primary mt-2">
+                                                <i class="bi bi-plus-circle"></i> Add First Employee
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @if (Model != null && Model.Any())
+        {
+            <div class="card-footer bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted">
+                        <i class="bi bi-people-fill"></i> Total Employees: <strong>@Model.Count()</strong>
+                    </span>
+                    <span class="text-muted">
+                        <i class="bi bi-check-circle-fill text-success"></i> Active: <strong>@Model.Count(e => e.IsActive)</strong>
+                    </span>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .avatar-circle {
+        display: inline-block;
+    }
+    
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
+    }
+</style>

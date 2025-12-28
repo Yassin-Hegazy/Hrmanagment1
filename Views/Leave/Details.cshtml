@@ -1,0 +1,102 @@
+@model HRMANGMANGMENT.Models.LeaveRequest
+@{
+    ViewData["Title"] = "Leave Request Details";
+}
+
+<div class="container mt-4 animate-fade-in">
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-file-text"></i> Request Details</h2>
+                <p class="mb-0 opacity-75">View full details of the leave request</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="AllRequests" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-8">
+            <div class="card glass-card hover-lift">
+                <div class="card-header card-gradient-primary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Request #@Model.RequestId</h5>
+                        <span class="badge @Model.StatusBadgeClass">@Model.Status</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small text-uppercase">Employee</label>
+                            <p class="fw-bold fs-5">@Model.EmployeeName</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small text-uppercase">Leave Type</label>
+                            <p class="fw-bold fs-5">@Model.LeaveTypeName</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="text-muted small text-uppercase">Duration</label>
+                            <p class="fs-5">@Model.Duration Day(s)</p>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="text-muted small text-uppercase">Submission Date</label>
+                            <p class="fs-5">@Model.SubmissionDate.ToString("f")</p>
+                        </div>
+                    </div>
+
+                    <hr class="opacity-25" />
+
+                    <div class="mb-4">
+                        <label class="text-muted small text-uppercase"><i class="bi bi-chat-quote"></i> Justification</label>
+                        <div class="p-3 bg-light bg-opacity-10 rounded border border-secondary border-opacity-25">
+                            @if (!string.IsNullOrEmpty(Model.Justification))
+                            {
+                                <p class="mb-0">@Model.Justification</p>
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic">No justification provided.</span>
+                            }
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.DocumentPath))
+                    {
+                        <div class="alert alert-info d-flex align-items-center fade show">
+                            <i class="bi bi-paperclip fs-3 me-3"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">Attached Document</h6>
+                                <p class="mb-0 small opacity-75">This request includes a supporting document.</p>
+                                <a href="@Url.Content(Model.DocumentPath)" target="_blank" class="btn btn-sm btn-primary mt-2">
+                                    <i class="bi bi-eye"></i> View Document
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted"><i class="bi bi-file-earmark-x"></i> No document attached.</p>
+                    }
+                </div>
+                <div class="card-footer bg-transparent border-top border-secondary border-opacity-10">
+                    <small class="text-muted">
+                        @if (Model.ApprovalTiming.HasValue)
+                        {
+                            <span>Processed on: @Model.ApprovalTiming.Value.ToString("g")</span>
+                        }
+                        else
+                        {
+                            <span>Pending processing</span>
+                        }
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

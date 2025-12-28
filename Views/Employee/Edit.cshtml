@@ -1,0 +1,264 @@
+@model HRMANGMANGMENT.Models.Employee
+
+@{
+    ViewData["Title"] = "Edit Profile";
+    var isHRAdmin = ViewBag.IsHRAdmin ?? false;
+    // We already passed IsSuperAdmin, CurrentUserId too if needed, but we can verify against Model
+    var isSuperAdmin = ViewBag.IsSuperAdmin ?? false;
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var isOwnProfile = currentUserId == Model.EmployeeId.ToString();
+    
+    // Logic: SuperAdmins cannot edit others' personal info
+    var disablePersonalFields = isSuperAdmin && !isOwnProfile;
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-12">
+                <h2><i class="bi bi-pencil-square"></i> Edit Profile</h2>
+                <p class="mb-0 opacity-75">
+                    @if (isHRAdmin)
+                    {
+                        <span class="badge bg-warning text-dark"><i class="bi bi-shield-check"></i> Admin Mode - Full Access</span>
+                    }
+                    else
+                    {
+                        <span>Update your contact and emergency information</span>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <strong>Error!</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="EmployeeId" />
+        <!-- Preserve fields that shouldn't change -->
+        <input type="hidden" asp-for="FirstName" />
+        <input type="hidden" asp-for="LastName" />
+        <input type="hidden" asp-for="NationalId" />
+        <input type="hidden" asp-for="DateOfBirth" />
+        <input type="hidden" asp-for="CountryOfBirth" />
+        <input type="hidden" asp-for="HireDate" />
+        <input type="hidden" asp-for="DepartmentId" />
+        <input type="hidden" asp-for="PositionId" />
+        <input type="hidden" asp-for="ManagerId" />
+        <input type="hidden" asp-for="ContractId" />
+        
+        @* Only use hidden inputs for admin fields if NOT an HR Admin *@
+        @* HR Admins use the visible admin controls instead *@
+        @if (!isHRAdmin)
+        {
+            <input type="hidden" asp-for="IsActive" />
+            <input type="hidden" asp-for="ProfileCompletion" />
+            <input type="hidden" asp-for="EmploymentStatus" />
+        }
+
+        <div class="row stagger-animation">
+            <!-- Profile Picture Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card glass-card hover-lift animate-scale">
+                    <div class="card-header card-gradient-primary">
+                        <h5 class="mb-0"><i class="bi bi-image-fill"></i> Profile Picture</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        @if (!string.IsNullOrEmpty(Model.ProfileImage))
+                        {
+                            <img src="~/uploads/profiles/@Model.ProfileImage" alt="Profile Picture" class="img-thumbnail mb-3" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="mb-3">
+                                <i class="bi bi-person-circle" style="font-size: 100px; color: #ccc;"></i>
+                            </div>
+                        }
+                        
+                        @if (!disablePersonalFields)
+                        {
+                            <div class="mb-3">
+                                <label for="profilePicture" class="form-label">
+                                    <i class="bi bi-upload text-primary"></i> Upload New Picture
+                                </label>
+                                <input type="file" name="profilePicture" id="profilePicture" class="form-control" accept="image/*" />
+                                <small class="text-muted">Accepted formats: JPG, PNG, GIF (Max 5MB)</small>
+                            </div>
+                        }
+                        else
+                        {
+                             <div class="alert alert-secondary">
+                                <i class="bi bi-lock-fill"></i> Profile picture editing is restricted.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employee Info (Read-only display for reference) -->
+            <div class="col-md-12 mb-4">
+                <div class="card glass-card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="bi bi-person-badge"></i> Employee Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p class="mb-1 text-muted">Name</p>
+                                <p class="fw-bold">@Model.FullName</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="mb-1 text-muted">Department</p>
+                                <p class="fw-bold">@(Model.DepartmentName ?? "Not Assigned")</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="mb-1 text-muted">Position</p>
+                                <p class="fw-bold">@(Model.PositionTitle ?? "Not Assigned")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card glass-card hover-lift animate-slide-left">
+                    <div class="card-header card-gradient-info">
+                        <h5 class="mb-0"><i class="bi bi-telephone-fill"></i> Contact Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">
+                                <i class="bi bi-envelope text-primary"></i> Email
+                            </label>
+                            @if (isHRAdmin && !disablePersonalFields) // HRAdmin can edit email ONLY if not restricted (SuperAdmin logic)
+                            {
+                                <input asp-for="Email" type="email" class="form-control" placeholder="employee@company.com" />
+                            }
+                            else
+                            {
+                                <input asp-for="Email" type="email" class="form-control" readonly />
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label">
+                                <i class="bi bi-phone text-success"></i> Phone
+                            </label>
+                            <input asp-for="Phone" class="form-control" placeholder="+1 (555) 123-4567" disabled="@(disablePersonalFields ? "disabled" : null)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">
+                                <i class="bi bi-geo-alt text-danger"></i> Address
+                            </label>
+                            <textarea asp-for="Address" class="form-control" rows="3" placeholder="Enter full address" disabled="@(disablePersonalFields ? "disabled" : null)"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card glass-card hover-lift animate-slide-right">
+                    <div class="card-header card-gradient-warning">
+                        <h5 class="mb-0"><i class="bi bi-exclamation-triangle-fill"></i> Emergency Contact</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="EmergencyContactName" class="form-label">
+                                <i class="bi bi-person text-warning"></i> Contact Name
+                            </label>
+                            <input asp-for="EmergencyContactName" class="form-control" placeholder="Emergency contact name" disabled="@(disablePersonalFields ? "disabled" : null)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="EmergencyContactPhone" class="form-label">
+                                <i class="bi bi-phone text-warning"></i> Contact Phone
+                            </label>
+                            <input asp-for="EmergencyContactPhone" class="form-control" placeholder="Emergency contact phone" disabled="@(disablePersonalFields ? "disabled" : null)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Relationship" class="form-label">
+                                <i class="bi bi-people text-info"></i> Relationship
+                            </label>
+                            <input asp-for="Relationship" class="form-control" placeholder="e.g., Spouse, Parent, Sibling" disabled="@(disablePersonalFields ? "disabled" : null)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Biography / About Me Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card glass-card hover-lift animate-scale">
+                    <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <h5 class="mb-0"><i class="bi bi-file-text-fill"></i> Biography / About Me</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="Biography" class="form-label">
+                                <i class="bi bi-chat-quote text-primary"></i> Tell us about yourself
+                            </label>
+                            <textarea asp-for="Biography" class="form-control" rows="5" 
+                                      placeholder="Share your professional background..." disabled="@(disablePersonalFields ? "disabled" : null)"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Actions -->
+            @if (isHRAdmin)
+            {
+                <div class="col-md-12 mb-4">
+                    <div class="card glass-card hover-lift border-warning">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1"><i class="bi bi-shield-lock"></i> Administrative Attributes</h5>
+                                <p class="mb-0 text-muted">Manage department, position, contract, and system status.</p>
+                            </div>
+                            <a asp-action="ManageAttributes" asp-route-id="@Model.EmployeeId" class="btn btn-warning">
+                                <i class="bi bi-sliders"></i> Manage Attributes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="card glass-card animate-scale">
+            <div class="card-body text-center">
+                @if (!disablePersonalFields)
+                {
+                    <button type="submit" class="btn btn-warning btn-lg hover-lift">
+                        <i class="bi bi-save-fill"></i> Update Profile
+                    </button>
+                    <a asp-action="Details" asp-route-id="@Model.EmployeeId" class="btn btn-secondary btn-lg hover-lift">
+                        <i class="bi bi-x-circle-fill"></i> Cancel
+                    </a>
+                }
+                else
+                {
+                    <div class="alert alert-info d-inline-block mb-0">
+                        <i class="bi bi-lock-fill"></i> <strong>Read-Only Mode:</strong> Attribute editing is available above.
+                    </div>
+                    <a asp-action="Details" asp-route-id="@Model.EmployeeId" class="btn btn-secondary btn-lg ms-3 hover-lift">
+                        <i class="bi bi-arrow-left"></i> Back to Profile
+                    </a>
+                }
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

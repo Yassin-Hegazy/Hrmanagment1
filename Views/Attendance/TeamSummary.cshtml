@@ -1,0 +1,185 @@
+@model IEnumerable<HRMANGMANGMENT.Models.Attendance>
+
+@{
+    ViewData["Title"] = "Team Attendance Summary";
+    var startDate = ViewBag.StartDate as DateTime? ?? DateTime.Today.AddDays(-7);
+    var endDate = ViewBag.EndDate as DateTime? ?? DateTime.Today;
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-people-fill"></i> Team Attendance Summary</h2>
+                <p class="mb-0 opacity-75">Monitor your team's attendance</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Dashboard" class="btn btn-info">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a asp-action="PendingCorrections" class="btn btn-warning">
+                    <i class="bi bi-exclamation-circle"></i> Corrections
+                </a>
+                <a asp-action="ExportTeamAttendance" asp-route-startDate="@startDate.ToString("yyyy-MM-dd")" asp-route-endDate="@endDate.ToString("yyyy-MM-dd")" class="btn btn-success">
+                    <i class="bi bi-download"></i> Export CSV
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Filter Card -->
+    <div class="card glass-card hover-lift mb-4">
+        <div class="card-header card-gradient-primary">
+            <h5 class="mb-0"><i class="bi bi-funnel"></i> Filter by Date Range</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="TeamSummary" method="get">
+                <div class="row align-items-end">
+                    <div class="col-md-4 mb-2">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate" value="@startDate.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="endDate" name="endDate" value="@endDate.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <button type="submit" class="btn btn-primary w-100 hover-lift">
+                            <i class="bi bi-search"></i> Apply Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Team Attendance Table -->
+    <div class="card glass-card hover-lift">
+        <div class="card-header card-gradient-info">
+            <h5 class="mb-0"><i class="bi bi-table"></i> Team Attendance Records</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-person"></i> Employee Name</th>
+                            <th><i class="bi bi-calendar"></i> Date</th>
+                            <th><i class="bi bi-box-arrow-in-right"></i> Check-In</th>
+                            <th><i class="bi bi-box-arrow-right"></i> Check-Out</th>
+                            <th><i class="bi bi-hourglass-split"></i> Duration</th>
+                            <th><i class="bi bi-activity"></i> Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var record in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <i class="bi bi-person-circle text-primary"></i>
+                                        <strong>@record.EmployeeName</strong>
+                                    </td>
+                                    <td>@record.EntryTime?.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        @if (record.EntryTime.HasValue)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"></i> @record.EntryTime.Value.ToString("hh:mm tt")
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">--:--</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (record.ExitTime.HasValue)
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-box-arrow-right"></i> @record.ExitTime.Value.ToString("hh:mm tt")
+                                            </span>
+                                        }
+                                        else if (record.EntryTime.HasValue)
+                                        {
+                                            <span class="badge bg-info">
+                                                <i class="bi bi-hourglass-split"></i> In Progress
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">--:--</span>
+                                        }
+                                    </td>
+                                    <td>@record.DurationFormatted</td>
+                                    <td>
+                                        @{
+                                            var statusClass = record.Status switch
+                                            {
+                                                "Present" => "bg-success",
+                                                "Late" => "bg-warning text-dark",
+                                                "Absent" => "bg-danger",
+                                                "Clocked In" => "bg-info",
+                                                _ => "bg-secondary"
+                                            };
+                                            var statusIcon = record.Status switch
+                                            {
+                                                "Present" => "check-circle",
+                                                "Late" => "exclamation-triangle",
+                                                "Absent" => "x-circle",
+                                                "Clocked In" => "clock",
+                                                _ => "question-circle"
+                                            };
+                                        }
+                                        <span class="badge @statusClass">
+                                            <i class="bi bi-@statusIcon"></i> @record.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <div class="animate-float">
+                                        <i class="bi bi-calendar-x" style="font-size: 4rem; color: #ccc;"></i>
+                                        <p class="text-muted mt-3">No attendance records found for the selected date range</p>
+                                        <p class="text-muted">Try adjusting the filter dates</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @if (Model != null && Model.Any())
+        {
+            <div class="card-footer bg-light">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <strong>Total Records:</strong> @Model.Count()
+                    </div>
+                    <div class="col-md-3">
+                        <strong class="text-success">Present:</strong> @Model.Count(a => a.Status == "Present")
+                    </div>
+                    <div class="col-md-3">
+                        <strong class="text-warning">Late:</strong> @Model.Count(a => a.Status == "Late")
+                    </div>
+                    <div class="col-md-3">
+                        <strong class="text-danger">Absent:</strong> @Model.Count(a => a.Status == "Absent")
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
+    }
+</style>

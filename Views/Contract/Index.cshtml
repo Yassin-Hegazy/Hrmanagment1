@@ -1,0 +1,212 @@
+@model IEnumerable<HRMANGMANGMENT.Models.Contract>
+
+@{
+    ViewData["Title"] = "Contracts";
+    var expiringCount = Model?.Count(c => c.IsExpiringSoon) ?? 0;
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-file-earmark-text-fill"></i> Contract Management</h2>
+                <p class="mb-0 opacity-75">Manage employee contracts and renewals</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Terminated" class="btn btn-danger hover-lift me-2">
+                    <i class="bi bi-file-earmark-x"></i> Terminated
+                </a>
+                <a asp-action="Expiring" class="btn btn-warning hover-lift">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Expiring Soon (@expiringCount)
+                </a>
+                <a asp-action="Create" class="btn btn-light btn-lg hover-lift">
+                    <i class="bi bi-plus-circle"></i> New Contract
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-check-circle-fill"></i> <strong>Success!</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (expiringCount > 0)
+    {
+        <div class="alert alert-warning animate-slide-right" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> 
+            <strong>Attention!</strong> You have <strong>@expiringCount</strong> contract(s) expiring within 30 days.
+            <a asp-action="Expiring" class="alert-link">View expiring contracts</a>
+        </div>
+    }
+
+    <!-- Contracts Table -->
+    <div class="card glass-card hover-lift animate-fade-in">
+        <div class="card-header card-gradient-primary">
+            <h5 class="mb-0"><i class="bi bi-table"></i> All Contracts</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-hash"></i> ID</th>
+                            <th><i class="bi bi-person"></i> Employee</th>
+                            <th><i class="bi bi-briefcase"></i> Type</th>
+                            <th><i class="bi bi-calendar"></i> Start Date</th>
+                            <th><i class="bi bi-calendar-x"></i> End Date</th>
+                            <th><i class="bi bi-activity"></i> Status</th>
+                            <th><i class="bi bi-gear"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="stagger-animation">
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var contract in Model)
+                            {
+                                <tr class="@(contract.IsExpiringSoon ? "table-warning" : "")">
+                                    <td><strong class="text-primary">#@contract.ContractId</strong></td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            @if (!string.IsNullOrEmpty(contract.ProfileImage))
+                                            {
+                                                <img src="~/uploads/profiles/@contract.ProfileImage" 
+                                                     alt="@contract.EmployeeName" 
+                                                     class="rounded-circle me-3"
+                                                     style="width: 40px; height: 40px; object-fit: cover; border: 2px solid var(--german-gold);" />
+                                            }
+                                            else
+                                            {
+                                                <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" 
+                                                     style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--german-gold), var(--dark-gold)); border: 2px solid var(--german-black);">
+                                                    <i class="bi bi-person-fill" style="font-size: 1.2rem; color: var(--german-black);"></i>
+                                                </div>
+                                            }
+                                            <div>
+                                                <strong>@contract.EmployeeName</strong>
+                                                @if (!string.IsNullOrEmpty(contract.DepartmentName) || !string.IsNullOrEmpty(contract.PositionTitle))
+                                                {
+                                                    <div class="small text-muted">@contract.DepartmentName - @contract.PositionTitle</div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge @(contract.ContractType switch {
+                                            "Full-time" => "bg-success",
+                                            "Part-time" => "bg-info",
+                                            "Consultant" => "bg-warning",
+                                            "Internship" => "bg-secondary",
+                                            _ => "bg-primary"
+                                        })">
+                                            @contract.ContractType
+                                        </span>
+                                    </td>
+                                    <td>@contract.StartDate.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        @if (contract.EndDate.HasValue)
+                                        {
+                                            <span>@contract.EndDate.Value.ToString("MMM dd, yyyy")</span>
+                                            @if (contract.IsExpiringSoon)
+                                            {
+                                                <br />
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="bi bi-exclamation-triangle"></i> @contract.DaysRemaining days left
+                                                </span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Permanent</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge @(contract.Status switch {
+                                            "Active" => "bg-success",
+                                            "Expired" => "bg-danger",
+                                            "Terminated" => "bg-dark",
+                                            _ => "bg-secondary"
+                                        })">
+                                            @contract.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@contract.ContractId" 
+                                               class="btn btn-sm btn-info" title="View Details">
+                                                <i class="bi bi-eye-fill"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@contract.ContractId" 
+                                               class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="bi bi-pencil-fill"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="animate-float">
+                                    <div class="animate-float">
+                                        <!-- 3D Cube Decoration -->
+                                        <div class="scene-3d">
+                                            <div class="cube-3d">
+                                                <div class="cube-face cube-face-front"><i class="bi bi-file-text"></i></div>
+                                                <div class="cube-face cube-face-back"><i class="bi bi-file-text"></i></div>
+                                                <div class="cube-face cube-face-right"><i class="bi bi-pen"></i></div>
+                                                <div class="cube-face cube-face-left"><i class="bi bi-pen"></i></div>
+                                                <div class="cube-face cube-face-top"><i class="bi bi-building"></i></div>
+                                                <div class="cube-face cube-face-bottom"><i class="bi bi-building"></i></div>
+                                            </div>
+                                        </div>
+                                        <p class="text-muted mt-3">No contracts found</p>
+                                        <a asp-action="Create" class="btn btn-primary mt-2">
+                                            <i class="bi bi-plus-circle"></i> Create First Contract
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @if (Model != null && Model.Any())
+        {
+            <div class="card-footer bg-light">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <strong>Total:</strong> @Model.Count()
+                    </div>
+                    <div class="col-md-3">
+                        <strong class="text-success">Active:</strong> @Model.Count(c => c.Status == "Active")
+                    </div>
+                    <div class="col-md-3">
+                        <strong class="text-warning">Expiring:</strong> @expiringCount
+                    </div>
+                    <div class="col-md-3">
+                        <strong class="text-danger">Expired:</strong> @Model.Count(c => c.Status == "Expired")
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .table-warning {
+        background-color: rgba(255, 206, 0, 0.1) !important;
+    }
+    
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
+    }
+</style>

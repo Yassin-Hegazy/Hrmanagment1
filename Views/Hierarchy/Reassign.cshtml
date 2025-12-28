@@ -1,0 +1,126 @@
+@{
+    ViewData["Title"] = "Reassign Employee";
+    var departments = ViewBag.Departments as IEnumerable<HRMANGMANGMENT.Models.Department>;
+    var managers = ViewBag.Managers as IEnumerable<HRMANGMANGMENT.Models.TeamMember>;
+    var employee = ViewBag.Employee as HRMANGMANGMENT.Models.TeamMember;
+    var employeeId = (int)ViewBag.EmployeeId;
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-arrow-left-right"></i> Reassign Employee</h2>
+                <p class="mb-0 opacity-75">Move employee to a new department or manager</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Index" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to Hierarchy
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Current Assignment -->
+            @if (employee != null)
+            {
+                <div class="card glass-card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-person"></i> Current Assignment</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label text-muted">Employee</label>
+                                <p class="fw-bold">@employee.FullName</p>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-muted">Current Department</label>
+                                <p class="fw-bold">@(employee.DepartmentName ?? "Not Assigned")</p>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-muted">Current Manager</label>
+                                <p class="fw-bold">@(employee.ManagerName ?? "No Manager")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Reassignment Form -->
+            <div class="card glass-card">
+                <div class="card-header card-gradient-warning">
+                    <h5 class="mb-0"><i class="bi bi-arrow-left-right"></i> New Assignment</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Reassign" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="employeeId" value="@employeeId" />
+
+                        <div class="mb-4">
+                            <label for="newDepartmentId" class="form-label">
+                                <i class="bi bi-building"></i> New Department
+                            </label>
+                            <select class="form-select form-select-lg" id="newDepartmentId" name="newDepartmentId">
+                                <option value="">-- Keep Current Department --</option>
+                                @if (departments != null)
+                                {
+                                    @foreach (var dept in departments)
+                                    {
+                                        <option value="@dept.DepartmentId">@dept.DepartmentName</option>
+                                    }
+                                }
+                            </select>
+                            <div class="form-text">Leave empty to keep current department</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="newManagerId" class="form-label">
+                                <i class="bi bi-person-badge"></i> New Manager
+                            </label>
+                            <select class="form-select form-select-lg" id="newManagerId" name="newManagerId">
+                                <option value="">-- Keep Current Manager --</option>
+                                @if (managers != null)
+                                {
+                                    @foreach (var mgr in managers)
+                                    {
+                                        if (mgr.EmployeeId != employeeId) // Can't report to self
+                                        {
+                                            <option value="@mgr.EmployeeId">@mgr.FullName (@(mgr.DepartmentName ?? "No Dept"))</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <div class="form-text">Leave empty to keep current manager</div>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Warning:</strong> Changing an employee's assignment may affect their leave requests, missions, and other records.
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="bi bi-check-circle"></i> Confirm Reassignment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

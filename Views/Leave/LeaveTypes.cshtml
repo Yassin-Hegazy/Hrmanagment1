@@ -1,0 +1,64 @@
+@model IEnumerable<HRMANGMANGMENT.Models.LeaveType>
+@{
+    ViewData["Title"] = "Manage Leave Types";
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-tags"></i> Leave Types</h2>
+                <p class="mb-0 opacity-75">Manage available leave types</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="CreateType" class="btn btn-success hover-lift">
+                    <i class="bi bi-plus-circle"></i> Add Leave Type
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Leave Types Grid -->
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var type in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card glass-card hover-lift h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-tag-fill text-primary"></i> @type.LeaveTypeName
+                            </h5>
+                            <p class="card-text text-muted">@(type.Description ?? "No description")</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <small class="text-muted">ID: @type.LeaveId</small>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-info text-center py-5">
+                    <i class="bi bi-tags" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">No Leave Types</h5>
+                    <p>Click "Add Leave Type" to create your first leave type.</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Add Type Modal Removed -->

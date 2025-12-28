@@ -1,0 +1,195 @@
+@model IEnumerable<HRMANGMANGMENT.Models.AttendanceCorrectionRequest>
+
+@{
+    ViewData["Title"] = "Pending Correction Requests";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-tasks"></i> Pending Correction Requests</h2>
+            <p class="text-muted">Review and approve attendance correction requests from your team</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-controller="Attendance" asp-action="TeamSummary" class="btn btn-outline-secondary">
+                <i class="fas fa-chart-bar"></i> Team Summary
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Date</th>
+                                <th>Correction Type</th>
+                                <th>Reason</th>
+                                <th>Requested Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var request in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@request.EmployeeName</strong>
+                                        <br />
+                                        <small class="text-muted">ID: @request.EmployeeId</small>
+                                    </td>
+                                    <td>@request.Date.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        @if (request.CorrectionType == "CheckIn")
+                                        {
+                                            <span class="badge bg-info">Check In</span>
+                                        }
+                                        else if (request.CorrectionType == "CheckOut")
+                                        {
+                                            <span class="badge bg-warning">Check Out</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@request.CorrectionType</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <small>@request.Reason</small>
+                                    </td>
+                                    <td>
+                                        @if (request.CorrectTime.HasValue)
+                                        {
+                                            <span>@request.CorrectTime.Value.ToString("hh:mm tt")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not specified</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-success" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#approveModal@request.RequestId">
+                                                <i class="fas fa-check"></i> Approve
+                                            </button>
+                                            <button type="button" class="btn btn-danger" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#rejectModal@request.RequestId">
+                                                <i class="fas fa-times"></i> Reject
+                                            </button>
+                                        </div>
+
+                                        <!-- Approve Modal -->
+                                        <div class="modal fade" id="approveModal@request.RequestId" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-success text-white">
+                                                        <h5 class="modal-title">Approve Correction Request</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <form asp-action="ApproveCorrection" method="post">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="requestId" value="@request.RequestId" />
+                                                        <div class="modal-body">
+                                                            <p><strong>Employee:</strong> @request.EmployeeName</p>
+                                                            <p><strong>Date:</strong> @request.Date.ToString("MMMM dd, yyyy")</p>
+                                                            <p><strong>Type:</strong> @request.CorrectionType</p>
+                                                            <p><strong>Reason:</strong> @request.Reason</p>
+                                                            
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Correct Time</label>
+                                                                <input type="time" name="correctTime" class="form-control" 
+                                                                       value="@request.CorrectTime?.ToString("HH:mm")" />
+                                                                <div class="form-text">Specify the correct time for this correction</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-success">
+                                                                <i class="fas fa-check"></i> Approve
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Reject Modal -->
+                                        <div class="modal fade" id="rejectModal@request.RequestId" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger text-white">
+                                                        <h5 class="modal-title">Reject Correction Request</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <form asp-action="RejectCorrection" method="post">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="requestId" value="@request.RequestId" />
+                                                        <div class="modal-body">
+                                                            <p><strong>Employee:</strong> @request.EmployeeName</p>
+                                                            <p><strong>Date:</strong> @request.Date.ToString("MMMM dd, yyyy")</p>
+                                                            
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Rejection Reason <span class="text-danger">*</span></label>
+                                                                <textarea name="reason" class="form-control" rows="3" 
+                                                                          placeholder="Explain why this request is being rejected..." required></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-danger">
+                                                                <i class="fas fa-times"></i> Reject
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h4>All Caught Up!</h4>
+                    <p class="text-muted">There are no pending correction requests at this time.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    </script>
+}

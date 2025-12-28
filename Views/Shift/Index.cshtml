@@ -1,0 +1,151 @@
+@model IEnumerable<HRMANGMANGMENT.Models.ShiftSchedule>
+
+@{
+    ViewData["Title"] = "Shift Management";
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-clock-fill"></i> Shift Management</h2>
+                <p class="mb-0 opacity-75">Manage shift schedules and assignments</p>
+            </div>
+            <div class="col-md-6 text-end">
+                @if (User.IsInRole("SuperAdmin") || User.IsInRole("SystemAdmin"))
+                {
+                    <a asp-action="Create" class="btn btn-light btn-lg hover-lift">
+                        <i class="bi bi-plus-circle"></i> Create Shift
+                    </a>
+                }
+                
+                @if (User.IsInRole("SuperAdmin") || User.IsInRole("SystemAdmin") || User.IsInRole("HRAdmin") || User.IsInRole("Manager"))
+                {
+                    <a asp-action="Assign" class="btn btn-warning btn-lg hover-lift">
+                        <i class="bi bi-calendar-check"></i> Assign Shifts
+                    </a>
+                }
+
+                @if (User.IsInRole("SuperAdmin") || User.IsInRole("SystemAdmin") || User.IsInRole("HRAdmin"))
+                {
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-info btn-lg dropdown-toggle hover-lift" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-star"></i> Advanced
+                        </button>
+                        <ul class="dropdown-menu">
+                            @if (User.IsInRole("SuperAdmin") || User.IsInRole("HRAdmin"))
+                            {
+                                <li><a class="dropdown-item" asp-action="ConfigureSplitShift">
+                                    <i class="bi bi-scissors"></i> Configure Split Shift
+                                </a></li>
+                                <li><a class="dropdown-item" asp-action="ConfigureRotational">
+                                    <i class="bi bi-arrow-repeat"></i> Configure Rotational
+                                </a></li>
+                            }
+                            @if (User.IsInRole("SuperAdmin") || User.IsInRole("SystemAdmin"))
+                            {
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" asp-action="AssignCustom">
+                                    <i class="bi bi-star-fill"></i> Assign Custom Shift
+                                </a></li>
+                            }
+                        </ul>
+                     </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-check-circle-fill"></i> <strong>Success!</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <strong>Error!</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Shifts Table -->
+    <div class="card glass-card hover-lift animate-fade-in">
+        <div class="card-header card-gradient-primary">
+            <h5 class="mb-0"><i class="bi bi-list-ul"></i> All Shifts</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-hash"></i> ID</th>
+                            <th><i class="bi bi-tag"></i> Name</th>
+                            <th><i class="bi bi-card-list"></i> Type</th>
+                            <th><i class="bi bi-clock"></i> Start Time</th>
+                            <th><i class="bi bi-clock-history"></i> End Time</th>
+                            <th><i class="bi bi-cup-hot"></i> Break (hours)</th>
+                            <th><i class="bi bi-toggle-on"></i> Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var shift in Model)
+                            {
+                                <tr>
+                                    <td><strong class="text-primary">#@shift.ShiftId</strong></td>
+                                    <td><strong>@shift.Name</strong></td>
+                                    <td>
+                                        <span class="badge @(shift.Type == "Normal" ? "bg-success" : "bg-info")">
+                                            @shift.Type
+                                        </span>
+                                    </td>
+                                    <td>@shift.StartTime.ToString(@"hh\:mm")</td>
+                                    <td>@shift.EndTime.ToString(@"hh\:mm")</td>
+                                    <td>@shift.BreakDuration</td>
+                                    <td>
+                                        @if (shift.Status)
+                                        {
+                                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary"><i class="bi bi-x-circle"></i> Inactive</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="animate-float">
+                                        <i class="bi bi-clock" style="font-size: 4rem; color: #ccc;"></i>
+                                        <p class="text-muted mt-3">No shifts found</p>
+                                        <a asp-action="Create" class="btn btn-primary mt-2">
+                                            <i class="bi bi-plus-circle"></i> Create First Shift
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Shift Modal Removed (Replaced by dedicated Create page) -->
+
+<style>
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
+    }
+</style>

@@ -1,0 +1,269 @@
+@{
+    ViewData["Title"] = "Activate Account";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - خليها على الله HRMS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-black: #1a1a1a;
+            --primary-red: #c41e3a;
+            --primary-gold: #d4a017;
+            --accent-gold: #f5c842;
+            --dark-surface: #2d2d2d;
+            --light-bg: #f8f9fa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--light-bg);
+        }
+
+        .brand-side {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-black) 0%, var(--dark-surface) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-side::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-black), var(--primary-red), var(--primary-gold), var(--primary-red), var(--primary-black));
+            background-size: 200% 100%;
+            animation: gradientSlide 3s ease infinite;
+        }
+
+        .brand-side::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-gold), var(--primary-red), var(--primary-black), var(--primary-red), var(--primary-gold));
+            background-size: 200% 100%;
+            animation: gradientSlide 3s ease infinite reverse;
+        }
+
+        @@keyframes gradientSlide {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .brand-logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--accent-gold) 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: logoFloat 4s ease-in-out infinite;
+        }
+
+        @@keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .brand-logo i { font-size: 48px; color: var(--primary-black); }
+
+        .brand-title { color: white; font-size: 32px; font-weight: 700; margin-bottom: 15px; text-align: center; }
+
+        .brand-subtitle { color: rgba(255, 255, 255, 0.7); font-size: 16px; text-align: center; max-width: 300px; line-height: 1.6; }
+
+        .form-side {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: white;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 400px;
+            animation: slideInRight 0.6s ease-out;
+        }
+
+        @@keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .form-header { margin-bottom: 40px; }
+        .form-header h1 { color: var(--primary-black); font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+        .form-header p { color: #6c757d; font-size: 15px; }
+
+        .form-group { margin-bottom: 24px; }
+
+        .form-label { display: block; color: var(--primary-black); font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.1);
+        }
+
+        .btn-activate {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-activate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.3);
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-danger { background: #fff5f5; color: var(--primary-red); border: 1px solid rgba(196, 30, 58, 0.2); }
+
+        .login-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .login-link a { color: var(--primary-red); font-weight: 600; text-decoration: none; }
+        .login-link a:hover { text-decoration: underline; }
+
+        .info-box {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border: 1px solid rgba(212, 160, 23, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-box i { color: var(--primary-gold); }
+
+        @@media (max-width: 992px) {
+            body { flex-direction: column; }
+            .brand-side { padding: 40px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="brand-side">
+        <div class="brand-logo">
+            <i class="bi bi-key-fill"></i>
+        </div>
+        <h1 class="brand-title">Activate Account</h1>
+        <p class="brand-subtitle">Set up your password to access خليها على الله HRMS</p>
+    </div>
+
+    <div class="form-side">
+        <div class="form-container">
+            <div class="form-header">
+                <h1>Activate Your Account</h1>
+                <p>Existing employee? Set your password here</p>
+            </div>
+
+            <div class="info-box">
+                <i class="bi bi-info-circle-fill"></i>
+                <strong>For existing employees only.</strong><br>
+                Enter your work email to set up your password for the first time.
+            </div>
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+
+            <form asp-action="ActivateAccount" method="post">
+                <div class="form-group">
+                    <label class="form-label">Work Email</label>
+                    <input type="email" class="form-control" name="email" 
+                           placeholder="your.email@company.com" required autofocus />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">New Password</label>
+                    <input type="password" class="form-control" name="password" 
+                           placeholder="Create a password" required minlength="6" />
+                    <small class="text-muted">Minimum 6 characters</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" name="confirmPassword" 
+                           placeholder="Confirm your password" required minlength="6" />
+                </div>
+
+                <button type="submit" class="btn-activate">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Activate Account
+                </button>
+            </form>
+
+            <div class="login-link">
+                <p>Already have a password? <a asp-action="Login">Sign In</a></p>
+                <p class="mt-2">New admin? <a asp-action="Register">Create Account</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

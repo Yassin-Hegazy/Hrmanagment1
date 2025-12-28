@@ -1,0 +1,84 @@
+@model HRMANGMANGMENT.Models.LeavePolicy
+
+@{
+    ViewData["Title"] = "Edit Leave Policy";
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-pencil-square"></i> Edit Leave Policy</h2>
+                <p class="mb-0 opacity-75">Modify existing policy rules</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Policies" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center stagger-animation">
+        <div class="col-md-8">
+            <div class="card glass-card hover-lift">
+                <div class="card-header card-gradient-warning text-white">
+                    <h5 class="mb-0"><i class="bi bi-slider"></i> Update Policy Config</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="EditPolicy" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="PolicyId" />
+                        
+                        <div class="mb-4">
+                            <label asp-for="Name" class="form-label">Policy Name <span class="text-danger">*</span></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Purpose" class="form-label">Purpose</label>
+                            <textarea asp-for="Purpose" class="form-control" rows="2"></textarea>
+                            <span asp-validation-for="Purpose" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="EligibilityRules" class="form-label">Eligibility Rules</label>
+                            <textarea asp-for="EligibilityRules" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="EligibilityRules" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="NoticePeriod" class="form-label">Notice Period (Days)</label>
+                                <input asp-for="NoticePeriod" class="form-control" type="number" min="0" />
+                                <span asp-validation-for="NoticePeriod" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label text-muted">Special Type Link</label>
+                                <input asp-for="SpecialLeaveType" class="form-control" readonly style="background-color: #f8f9fa;" />
+                                <small class="text-muted">Special type link cannot be renamed here.</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" asp-for="ResetOnNewYear" id="resetCheck">
+                            <label class="form-check-label" for="resetCheck">Reset Balances on New Year</label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning btn-lg text-white">
+                                <i class="bi bi-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

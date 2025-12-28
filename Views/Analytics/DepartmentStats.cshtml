@@ -1,0 +1,114 @@
+@model IEnumerable<HRMANGMANGMENT.Models.DepartmentStatistics>
+@{
+    ViewData["Title"] = "Department Statistics";
+    var searchTerm = ViewBag.SearchTerm as string;
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-building"></i> Department Statistics</h2>
+                <p class="mb-0 opacity-75">View employee statistics by department</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Index" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="card glass-card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-9">
+                    <input type="text" name="search" class="form-control" placeholder="Search departments..." value="@searchTerm" />
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Department Cards -->
+    <div class="row g-4">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var dept in Model)
+            {
+                <div class="col-lg-6">
+                    <div class="card glass-card h-100 hover-lift">
+                        <div class="card-header card-gradient-primary d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="bi bi-building"></i> @dept.DepartmentName</h5>
+                            <span class="badge bg-light text-dark">@dept.TotalEmployees employees</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Employee Status</h6>
+                                    <div class="d-flex gap-3">
+                                        <span class="badge bg-success">@dept.ActiveEmployees Active</span>
+                                        <span class="badge bg-secondary">@(dept.TotalEmployees - dept.ActiveEmployees) Inactive</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h6 class="text-muted mt-3">Age Distribution</h6>
+                            <div class="progress" style="height: 25px;">
+                                @{
+                                    var total = dept.Under25 + dept.Age25to34 + dept.Age35to44 + dept.Age45to54 + dept.Over55;
+                                    if (total == 0) total = 1; // Prevent division by zero
+                                }
+                                <div class="progress-bar bg-info" style="width: @((dept.Under25 * 100.0 / total))%" title="Under 25">
+                                    @if (dept.Under25 > 0) { <text>@dept.Under25</text> }
+                                </div>
+                                <div class="progress-bar bg-primary" style="width: @((dept.Age25to34 * 100.0 / total))%" title="25-34">
+                                    @if (dept.Age25to34 > 0) { <text>@dept.Age25to34</text> }
+                                </div>
+                                <div class="progress-bar bg-success" style="width: @((dept.Age35to44 * 100.0 / total))%" title="35-44">
+                                    @if (dept.Age35to44 > 0) { <text>@dept.Age35to44</text> }
+                                </div>
+                                <div class="progress-bar bg-warning" style="width: @((dept.Age45to54 * 100.0 / total))%" title="45-54">
+                                    @if (dept.Age45to54 > 0) { <text>@dept.Age45to54</text> }
+                                </div>
+                                <div class="progress-bar bg-danger" style="width: @((dept.Over55 * 100.0 / total))%" title="55+">
+                                    @if (dept.Over55 > 0) { <text>@dept.Over55</text> }
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-2 small text-muted">
+                                <span><i class="bi bi-circle-fill text-info"></i> &lt;25</span>
+                                <span><i class="bi bi-circle-fill text-primary"></i> 25-34</span>
+                                <span><i class="bi bi-circle-fill text-success"></i> 35-44</span>
+                                <span><i class="bi bi-circle-fill text-warning"></i> 45-54</span>
+                                <span><i class="bi bi-circle-fill text-danger"></i> 55+</span>
+                            </div>
+                        </div>
+                        <div class="card-footer text-end">
+                            <a asp-action="DepartmentDetails" asp-route-id="@dept.DepartmentId" class="btn btn-outline-primary">
+                                <i class="bi bi-eye"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="card glass-card">
+                    <div class="card-body text-center py-5">
+                        <i class="bi bi-building" style="font-size: 4rem; color: #ccc;"></i>
+                        <h5 class="mt-3 text-muted">No Departments Found</h5>
+                        <p class="text-muted">No departments match your search criteria.</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

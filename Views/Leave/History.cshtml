@@ -1,0 +1,97 @@
+@model IEnumerable<HRMANGMANGMENT.Models.LeaveRequest>
+@{
+    ViewData["Title"] = "Leave History";
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-clock-history"></i> Leave History</h2>
+                <p class="mb-0 opacity-75">View all your past leave requests</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Submit" class="btn btn-success hover-lift">
+                    <i class="bi bi-plus-circle"></i> New Request
+                </a>
+                <a asp-action="MyLeave" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Leave History Table -->
+    <div class="card glass-card">
+        <div class="card-header card-gradient-warning">
+            <h5 class="mb-0"><i class="bi bi-list-ul"></i> All Leave Requests</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th><i class="bi bi-tag"></i> Leave Type</th>
+                            <th><i class="bi bi-clock"></i> Duration</th>
+                            <th><i class="bi bi-chat-text"></i> Reason</th>
+                            <th><i class="bi bi-calendar"></i> Submitted</th>
+                            <th><i class="bi bi-check-circle"></i> Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var request in Model)
+                            {
+                                <tr>
+                                    <td>@request.RequestId</td>
+                                    <td>@request.LeaveTypeName</td>
+                                    <td><span class="badge bg-info">@request.Duration days</span></td>
+                                    <td>@(request.Justification?.Length > 50 ? request.Justification.Substring(0, 50) + "..." : request.Justification)</td>
+                                    <td>@request.SubmissionDate.ToString("MMM dd, yyyy")</td>
+                                    <td><span class="badge @request.StatusBadgeClass">@request.Status</span></td>
+                                    <td>
+                                        @if (request.Status == "Pending")
+                                        {
+                                            <form asp-action="Cancel" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="requestId" value="@request.RequestId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Cancel this request?')">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <i class="bi bi-calendar-x" style="font-size: 3rem; color: #ccc;"></i>
+                                    <p class="text-muted mt-3">No leave requests found</p>
+                                    <a asp-action="Submit" class="btn btn-success">
+                                        <i class="bi bi-plus-circle"></i> Submit Your First Request
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

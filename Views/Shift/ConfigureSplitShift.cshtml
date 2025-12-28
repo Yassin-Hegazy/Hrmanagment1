@@ -1,0 +1,85 @@
+@{
+    ViewData["Title"] = "Configure Split Shift";
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-scissors"></i> Configure Split Shift</h2>
+                <p class="mb-0 opacity-75">Create a shift with two separate time slots</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Index" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to Shifts
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <strong>Error!</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Split Shift Configuration Form -->
+    <div class="card glass-card hover-lift">
+        <div class="card-header card-gradient-warning">
+            <h5 class="mb-0"><i class="bi bi-clock-history"></i> Split Shift Details</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="ConfigureSplitShift" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-4">
+                    <label for="shiftName" class="form-label"><i class="bi bi-tag"></i> Shift Name</label>
+                    <input type="text" class="form-control" id="shiftName" name="shiftName" required 
+                           placeholder="e.g., Morning-Evening Split" />
+                    <small class="text-muted">Will create two shifts: "[Name] (Slot 1)" and "[Name] (Slot 2)"</small>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-primary"><i class="bi bi-brightness-high"></i> First Slot</h6>
+                        <div class="mb-3">
+                            <label for="firstSlotStart" class="form-label">Start Time</label>
+                            <input type="time" class="form-control" id="firstSlotStart" name="firstSlotStart" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="firstSlotEnd" class="form-label">End Time</label>
+                            <input type="time" class="form-control" id="firstSlotEnd" name="firstSlotEnd" required />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-danger"><i class="bi bi-moon-stars"></i> Second Slot</h6>
+                        <div class="mb-3">
+                            <label for="secondSlotStart" class="form-label">Start Time</label>
+                            <input type="time" class="form-control" id="secondSlotStart" name="secondSlotStart" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="secondSlotEnd" class="form-label">End Time</label>
+                            <input type="time" class="form-control" id="secondSlotEnd" name="secondSlotEnd" required />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle"></i> 
+                    <strong>Note:</strong> Split shifts are useful for schedules with a significant break between work periods. Both slots will be created as separate shift entries.
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg hover-lift px-5">
+                        <i class="bi bi-check-circle"></i> Create Split Shift
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

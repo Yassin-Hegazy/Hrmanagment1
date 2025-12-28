@@ -1,0 +1,95 @@
+@{
+    ViewData["Title"] = "Configure Rotational Shift";
+    var employees = ViewBag.Employees as IEnumerable<HRMANGMANGMENT.Models.Employee>;
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-arrow-repeat"></i> Configure Rotational Shift</h2>
+                <p class="mb-0 opacity-75">Assign rotating shift patterns to employees</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Index" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to Shifts
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show animate-slide-right" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <strong>Error!</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Rotational Shift Configuration Form -->
+    <div class="card glass-card hover-lift">
+        <div class="card-header card-gradient-info">
+            <h5 class="mb-0"><i class="bi bi-repeat"></i> Rotation Configuration</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="ConfigureRotational" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-4">
+                    <label for="employeeId" class="form-label"><i class="bi bi-person"></i> Employee</label>
+                    <select class="form-select" id="employeeId" name="employeeId" required>
+                        <option value="">-- Select Employee --</option>
+                        @if (employees != null)
+                        {
+                            @foreach (var emp in employees)
+                            {
+                                <option value="@emp.EmployeeId">@emp.FullName (@emp.DepartmentName)</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="shiftCycle" class="form-label"><i class="bi bi-diagram-3"></i> Shift Cycle ID</label>
+                    <input type="number" class="form-control" id="shiftCycle" name="shiftCycle" required min="1" 
+                           placeholder="Enter shift cycle ID" />
+                    <small class="text-muted">The shift cycle ID defines the rotation pattern (configured separately in ShiftCycle table)</small>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="startDate" class="form-label"><i class="bi bi-calendar-check"></i> Start Date</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate" 
+                               value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="endDate" class="form-label"><i class="bi bi-calendar-x"></i> End Date</label>
+                        <input type="date" class="form-control" id="endDate" name="endDate" required />
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="status" class="form-label"><i class="bi bi-toggle-on"></i> Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="Active" selected>Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Pending">Pending</option>
+                    </select>
+                </div>
+
+                <div class="alert alert-warning mb-4">
+                    <i class="bi bi-exclamation-triangle"></i> 
+                    <strong>Rotational Shifts:</strong> Employees will be automatically assigned shifts based on the cycle pattern. Make sure the Shift Cycle is configured in the ShiftCycle table before assigning.
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg hover-lift px-5">
+                        <i class="bi bi-check-circle"></i> Assign Rotational Shift
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

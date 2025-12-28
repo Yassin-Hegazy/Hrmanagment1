@@ -1,0 +1,153 @@
+@model HRMANGMANGMENT.Models.Employee
+
+@{
+    ViewData["Title"] = "Manage Roles";
+    var allRoles = ViewBag.AllRoles as IEnumerable<HRMANGMANGMENT.Models.Role>;
+    var currentRoles = ViewBag.CurrentRoles as List<string> ?? new List<string>();
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2><i class="bi bi-shield-lock-fill"></i> Manage Roles</h2>
+                <p class="mb-0 opacity-75">Assign system roles to @Model.FullName</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a asp-action="Details" asp-route-id="@Model.EmployeeId" class="btn btn-light btn-lg hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Employee Info Card -->
+        <div class="col-md-4">
+            <div class="card glass-card hover-lift">
+                <div class="card-header card-gradient-primary">
+                    <h5 class="mb-0"><i class="bi bi-person-circle"></i> Employee Info</h5>
+                </div>
+                <div class="card-body text-center">
+                    @if (!string.IsNullOrEmpty(Model.ProfileImage))
+                    {
+                        <img src="~/uploads/profiles/@Model.ProfileImage" alt="Profile" class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <i class="bi bi-person-circle text-muted" style="font-size: 80px;"></i>
+                    }
+                    <h4>@Model.FullName</h4>
+                    <p class="text-muted">@Model.Email</p>
+                    <p class="text-muted">
+                        <i class="bi bi-building"></i> @(Model.DepartmentName ?? "No Department")
+                    </p>
+                    
+                    <hr>
+                    
+                    <h6>Current Roles:</h6>
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        @foreach (var role in currentRoles)
+                        {
+                            <span class="badge bg-primary"><i class="bi bi-shield-check"></i> @role</span>
+                        }
+                        @if (!currentRoles.Any())
+                        {
+                            <span class="badge bg-secondary">No roles assigned</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role Selection Card -->
+        <div class="col-md-8">
+            <form asp-action="ManageRoles" method="post">
+                <input type="hidden" name="id" value="@Model.EmployeeId" />
+                
+                <div class="card glass-card hover-lift">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="bi bi-person-gear"></i> Assign Roles</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle"></i> 
+                            <strong>Note:</strong> An employee can have multiple roles. Select all roles that apply.
+                        </div>
+
+                        <div class="row">
+                            @if (allRoles != null)
+                            {
+                                @foreach (var role in allRoles)
+                                {
+                                    var isChecked = currentRoles.Contains(role.RoleName);
+                                    var roleColor = role.RoleName switch
+                                    {
+                                        "SuperAdmin" => "danger",
+                                        "HRAdmin" => "warning",
+                                        "Manager" => "info",
+                                        _ => "primary"
+                                    };
+                                    var roleIcon = role.RoleName switch
+                                    {
+                                        "SuperAdmin" => "bi-shield-fill-exclamation",
+                                        "HRAdmin" => "bi-person-badge-fill",
+                                        "Manager" => "bi-people-fill",
+                                        _ => "bi-person-fill"
+                                    };
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 @(isChecked ? $"border-{roleColor} bg-light" : "")">
+                                            <div class="card-body">
+                                                <div class="form-check">
+                                                    <input type="checkbox" 
+                                                           class="form-check-input" 
+                                                           name="selectedRoles" 
+                                                           value="@role.RoleId" 
+                                                           id="role_@role.RoleId"
+                                                           @(isChecked ? "checked" : "")>
+                                                    <label class="form-check-label w-100" for="role_@role.RoleId">
+                                                        <h5 class="mb-1">
+                                                            <i class="bi @roleIcon text-@roleColor"></i>
+                                                            @role.RoleName
+                                                        </h5>
+                                                        <small class="text-muted">@role.Purpose</small>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="card-footer text-center">
+                        <button type="submit" class="btn btn-warning btn-lg hover-lift">
+                            <i class="bi bi-save-fill"></i> Save Role Changes
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.EmployeeId" class="btn btn-secondary btn-lg ms-2">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

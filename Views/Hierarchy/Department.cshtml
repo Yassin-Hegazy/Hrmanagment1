@@ -1,0 +1,125 @@
+@model HRMANGMANGMENT.Models.DepartmentTeam
+@{
+    ViewData["Title"] = $"Team - {Model.DepartmentName}";
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-building"></i> @Model.DepartmentName</h2>
+                <p class="mb-0 opacity-75">@Model.EmployeeCount team members</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Index" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to Hierarchy
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Department Head -->
+    @if (Model.HeadEmployeeId.HasValue)
+    {
+        <div class="card glass-card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-person-badge"></i> Department Head</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <div class="avatar-lg bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-person-badge fs-4"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="mb-0">@Model.HeadName</h5>
+                        <p class="text-muted mb-0">Department Head</p>
+                    </div>
+                    <div class="ms-auto">
+                        <a asp-action="Manager" asp-route-id="@Model.HeadEmployeeId" class="btn btn-outline-success">
+                            <i class="bi bi-people"></i> View Team
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Team Members -->
+    <div class="card glass-card">
+        <div class="card-header card-gradient-primary">
+            <h5 class="mb-0"><i class="bi bi-people"></i> Team Members (@Model.Members.Count)</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Position</th>
+                            <th>Manager</th>
+                            <th>Direct Reports</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var member in Model.Members)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        @if (!string.IsNullOrEmpty(member.ProfileImage))
+                                        {
+                                            <img src="~/images/profiles/@member.ProfileImage" alt="" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-secondary text-white rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        }
+                                        <div>
+                                            <strong>@member.FullName</strong>
+                                            @if (member.IsManager)
+                                            {
+                                                <span class="badge bg-success ms-1">Manager</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@(member.Position ?? "-")</td>
+                                <td>@(member.ManagerName ?? "No Manager")</td>
+                                <td>
+                                    @if (member.DirectReports > 0)
+                                    {
+                                        <span class="badge bg-info">@member.DirectReports</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (member.IsManager)
+                                    {
+                                        <a asp-action="Manager" asp-route-id="@member.EmployeeId" class="btn btn-sm btn-outline-success me-1">
+                                            <i class="bi bi-people"></i>
+                                        </a>
+                                    }
+                                    @if (User.IsInRole("SuperAdmin") || User.IsInRole("SystemAdmin"))
+                                    {
+                                        <a asp-action="Reassign" asp-route-id="@member.EmployeeId" class="btn btn-sm btn-outline-warning">
+                                            <i class="bi bi-arrow-left-right"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

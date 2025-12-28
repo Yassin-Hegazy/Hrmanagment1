@@ -1,0 +1,39 @@
+@model HRMANGMANGMENT.Models.HierarchyNode
+
+<li>
+    <div class="tree-node @(Model.ChildCount > 0 ? "manager" : "")" 
+         data-id="@Model.Id"
+         title="@(Model.ChildCount > 0 ? "Click to expand/collapse" : Model.Name)">
+        
+        <div class="node-avatar">
+            @if (!string.IsNullOrEmpty(Model.ProfileImage))
+            {
+                <img src="~/images/profiles/@Model.ProfileImage" alt="@Model.Name" />
+            }
+            else
+            {
+                <i class="bi @Model.TypeIcon"></i>
+            }
+        </div>
+        
+        <div class="node-name">@Model.Name</div>
+        <div class="node-title">@(Model.Title ?? "N/A")</div>
+        
+        @if (Model.ChildCount > 0)
+        {
+            <span class="node-badge">@Model.ChildCount</span>
+        }
+        
+        <span class="collapse-indicator">+</span>
+    </div>
+    
+    @if (Model.Children != null && Model.Children.Any())
+    {
+        <ul class="tree-level">
+            @foreach (var child in Model.Children)
+            {
+                @await Html.PartialAsync("_TreeNode", child)
+            }
+        </ul>
+    }
+</li>

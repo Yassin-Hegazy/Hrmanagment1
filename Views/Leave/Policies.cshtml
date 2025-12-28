@@ -1,0 +1,104 @@
+@model IEnumerable<HRMANGMANGMENT.Models.LeavePolicy>
+@{
+    ViewData["Title"] = "Leave Policies";
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-file-earmark-ruled"></i> Leave Policies</h2>
+                <p class="mb-0 opacity-75">Configure leave policies and eligibility rules</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="CreatePolicy" class="btn btn-primary hover-lift me-2">
+                    <i class="bi bi-plus-circle"></i> Add New Policy
+                </a>
+                <a asp-action="LeaveTypes" class="btn btn-info hover-lift">
+                    <i class="bi bi-tags"></i> Types
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Policies Table -->
+    <div class="card glass-card">
+        <div class="card-header card-gradient-primary">
+            <h5 class="mb-0"><i class="bi bi-list-check"></i> All Policies</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Policy Name</th>
+                            <th>Purpose</th>
+                            <th>Eligibility</th>
+                            <th>Notice (days)</th>
+                            <th>Special Type</th>
+                            <th>Reset Yearly</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var policy in Model)
+                            {
+                                <tr>
+                                    <td><strong>@policy.Name</strong></td>
+                                    <td>@(policy.Purpose?.Length > 50 ? policy.Purpose.Substring(0, 50) + "..." : policy.Purpose)</td>
+                                    <td>@(policy.EligibilityRules?.Length > 30 ? policy.EligibilityRules.Substring(0, 30) + "..." : policy.EligibilityRules)</td>
+                                    <td><span class="badge bg-info">@policy.NoticePeriod</span></td>
+                                    <td>@(policy.SpecialLeaveType ?? "-")</td>
+                                    <td>
+                                        @if (policy.ResetOnNewYear)
+                                        {
+                                            <span class="badge bg-success"><i class="bi bi-check"></i> Yes</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary"><i class="bi bi-x"></i> No</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <a asp-action="EditPolicy" asp-route-id="@policy.PolicyId" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form asp-action="DeletePolicy" asp-route-id="@policy.PolicyId" method="post" onsubmit="return confirm('Are you sure you want to delete this policy?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <i class="bi bi-file-earmark-x" style="font-size: 3rem; color: #ccc;"></i>
+                                    <p class="text-muted mt-3">No policies configured</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

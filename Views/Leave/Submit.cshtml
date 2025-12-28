@@ -1,0 +1,120 @@
+@{
+    ViewData["Title"] = "Submit Leave Request";
+    var leaveTypes = ViewBag.LeaveTypes as IEnumerable<HRMANGMANGMENT.Models.LeaveType>;
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-calendar-plus"></i> Submit Leave Request</h2>
+                <p class="mb-0 opacity-75">Request time off from work</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="MyLeave" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to My Leave
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card glass-card hover-lift">
+                <div class="card-header card-gradient-success">
+                    <h5 class="mb-0"><i class="bi bi-pencil-square"></i> Leave Request Form</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Submit" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="leaveTypeId" class="form-label"><i class="bi bi-tag"></i> Leave Type <span class="text-danger">*</span></label>
+                                <select class="form-select" id="leaveTypeId" name="leaveTypeId" required>
+                                    <option value="">-- Select Leave Type --</option>
+                                    @if (leaveTypes != null)
+                                    {
+                                        @foreach (var type in leaveTypes)
+                                        {
+                                            <option value="@type.LeaveId">@type.LeaveTypeName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="startDate" class="form-label"><i class="bi bi-calendar-event"></i> Start Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="startDate" name="startDate" required 
+                                       min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="endDate" class="form-label"><i class="bi bi-calendar-event"></i> End Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="endDate" name="endDate" required 
+                                       min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="durationDisplay" class="form-label"><i class="bi bi-clock"></i> Duration</label>
+                            <input type="text" class="form-control" id="durationDisplay" readonly placeholder="Select dates to calculate" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="reason" class="form-label"><i class="bi bi-chat-text"></i> Reason / Justification</label>
+                            <textarea class="form-control" id="reason" name="reason" rows="3" 
+                                      placeholder="Explain why you need this leave..."></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="document" class="form-label"><i class="bi bi-paperclip"></i> Attach Document (Optional)</label>
+                            <input type="file" class="form-control" id="document" name="document" accept=".pdf,.doc,.docx,.jpg,.png" />
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="MyLeave" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-send"></i> Submit Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Calculate duration when dates change
+        document.getElementById('startDate').addEventListener('change', calculateDuration);
+        document.getElementById('endDate').addEventListener('change', calculateDuration);
+
+        function calculateDuration() {
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+
+            if (startDate && endDate && endDate >= startDate) {
+                const diffTime = Math.abs(endDate - startDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                document.getElementById('durationDisplay').value = diffDays + ' day(s)';
+            } else {
+                document.getElementById('durationDisplay').value = '';
+            }
+        }
+    </script>
+}

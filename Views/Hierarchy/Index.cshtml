@@ -1,0 +1,108 @@
+@model HRMANGMANGMENT.Models.OrganizationChart
+@{
+    ViewData["Title"] = "Organization Hierarchy";
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-diagram-3"></i> Organization Hierarchy</h2>
+                <p class="mb-0 opacity-75">Navigate through departments, managers, and teams</p>
+            </div>
+            <div class="col-md-6 text-end">
+                @if (User.IsInRole("SuperAdmin") || User.IsInRole("SystemAdmin"))
+                {
+                    <a asp-action="ManageLevels" class="btn btn-outline-primary hover-lift me-2">
+                        <i class="bi bi-table"></i> Manage Levels
+                    </a>
+                }
+                @if (User.IsInRole("SuperAdmin"))
+                {
+                    <a asp-action="Tree" class="btn btn-info hover-lift">
+                        <i class="bi bi-bezier2"></i> Visual Tree
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Summary Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card glass-card h-100 text-center">
+                <div class="card-body">
+                    <i class="bi bi-people-fill text-primary" style="font-size: 2.5rem;"></i>
+                    <h2 class="mt-2 mb-0">@Model.TotalEmployees</h2>
+                    <p class="text-muted mb-0">Total Employees</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card glass-card h-100 text-center">
+                <div class="card-body">
+                    <i class="bi bi-building text-info" style="font-size: 2.5rem;"></i>
+                    <h2 class="mt-2 mb-0">@Model.TotalDepartments</h2>
+                    <p class="text-muted mb-0">Departments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card glass-card h-100 text-center">
+                <div class="card-body">
+                    <i class="bi bi-person-badge text-success" style="font-size: 2.5rem;"></i>
+                    <h2 class="mt-2 mb-0">@Model.TotalManagers</h2>
+                    <p class="text-muted mb-0">Managers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Departments Grid -->
+    <h4 class="mb-3"><i class="bi bi-building"></i> Departments</h4>
+    <div class="row g-4">
+        @foreach (var dept in Model.Departments)
+        {
+            <div class="col-lg-4 col-md-6">
+                <div class="card glass-card h-100 hover-lift">
+                    <div class="card-header card-gradient-primary d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-building"></i> @dept.DepartmentName</h5>
+                        <span class="badge bg-light text-dark">@dept.EmployeeCount</span>
+                    </div>
+                    <div class="card-body">
+                        @if (!string.IsNullOrEmpty(dept.HeadName))
+                        {
+                            <p class="mb-2">
+                                <i class="bi bi-person-badge text-success"></i>
+                                <strong>Head:</strong> @dept.HeadName
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-person-badge"></i> No department head assigned
+                            </p>
+                        }
+                        <p class="small text-muted mb-0">
+                            <i class="bi bi-people"></i> @dept.EmployeeCount employees
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-action="Department" asp-route-id="@dept.DepartmentId" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-eye"></i> View Team
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

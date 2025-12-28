@@ -1,0 +1,236 @@
+@model IEnumerable<HRMANGMANGMENT.Models.ExceptionDay>
+
+@{
+    ViewData["Title"] = "Exception Calendar";
+    var year = ViewBag.Year;
+    var month = ViewBag.Month;
+    var monthName = ViewBag.MonthName;
+    
+    var firstDay = new DateTime(year, month, 1);
+    var daysInMonth = DateTime.DaysInMonth(year, month);
+    var startDayOfWeek = (int)firstDay.DayOfWeek;
+    
+    // Create dictionary for quick lookup
+    var exceptionsByDate = Model.ToDictionary(e => e.Date.Date, e => e);
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-calendar-alt"></i> Exception Calendar</h2>
+            <p class="text-muted">View holidays and special days for @monthName</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-list"></i> List View
+            </a>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Exception
+            </a>
+        </div>
+    </div>
+
+    <!-- Month Navigation -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <a asp-action="Calendar" 
+                       asp-route-year="@(month == 1 ? year - 1 : year)" 
+                       asp-route-month="@(month == 1 ? 12 : month - 1)" 
+                       class="btn btn-outline-primary">
+                        <i class="fas fa-chevron-left"></i> Previous Month
+                    </a>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h4 class="mb-0">@monthName</h4>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a asp-action="Calendar" 
+                       asp-route-year="@(month == 12 ? year + 1 : year)" 
+                       asp-route-month="@(month == 12 ? 1 : month + 1)" 
+                       class="btn btn-outline-primary">
+                        Next Month <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="card">
+        <div class="card-body">
+            <div class="calendar-grid">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Sunday</th>
+                            <th class="text-center">Monday</th>
+                            <th class="text-center">Tuesday</th>
+                            <th class="text-center">Wednesday</th>
+                            <th class="text-center">Thursday</th>
+                            <th class="text-center">Friday</th>
+                            <th class="text-center">Saturday</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var dayCounter = 1;
+                            var weeksNeeded = (int)Math.Ceiling((daysInMonth + startDayOfWeek) / 7.0);
+                        }
+                        
+                        @for (var week = 0; week < weeksNeeded; week++)
+                        {
+                            <tr>
+                                @for (var dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++)
+                                {
+                                    var cellIndex = week * 7 + dayOfWeek;
+                                    
+                                    @if (cellIndex < startDayOfWeek || dayCounter > daysInMonth)
+                                    {
+                                        <td class="calendar-day empty"></td>
+                                    }
+                                    else
+                                    {
+                                        var currentDate = new DateTime(year, month, dayCounter);
+                                        var hasException = exceptionsByDate.ContainsKey(currentDate);
+                                        var exception = hasException ? exceptionsByDate[currentDate] : null;
+                                        var isToday = currentDate.Date == DateTime.Today;
+                                        
+                                        <td class="calendar-day @(hasException ? "has-exception" : "") @(isToday ? "today" : "")">
+                                            <div class="day-number">@dayCounter</div>
+                                            @if (hasException && exception != null)
+                                            {
+                                                <div class="exception-info">
+                                                    <div class="exception-name" title="@exception.Name">
+                                                        @exception.CategoryDisplay
+                                                    </div>
+                                                    <div class="exception-title">@exception.Name</div>
+                                                    @if (exception.IsRecurring)
+                                                    {
+                                                        <span class="badge bg-info badge-sm">
+                                                            <i class="fas fa-redo"></i>
+                                                        </span>
+                                                    }
+                                                </div>
+                                            }
+                                        </td>
+                                        dayCounter++;
+                                    }
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5>Legend</h5>
+            <div class="row">
+                <div class="col-md-3">
+                    <span class="legend-item">
+                        <span class="legend-box today"></span> Today
+                    </span>
+                </div>
+                <div class="col-md-3">
+                    <span class="legend-item">
+                        <span class="legend-box has-exception"></span> Exception Day
+                    </span>
+                </div>
+                <div class="col-md-3">
+                    <span class="legend-item">
+                        🎉 Holiday
+                    </span>
+                </div>
+                <div class="col-md-3">
+                    <span class="legend-item">
+                        ⭐ Special Event
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .calendar-grid table {
+            margin-bottom: 0;
+        }
+        
+        .calendar-day {
+            height: 120px;
+            vertical-align: top;
+            padding: 8px;
+            position: relative;
+        }
+        
+        .calendar-day.empty {
+            background-color: #f8f9fa;
+        }
+        
+        .calendar-day.today {
+            background-color: #e3f2fd;
+            border: 2px solid #2196f3;
+        }
+        
+        .calendar-day.has-exception {
+            background-color: #fff3cd;
+        }
+        
+        .day-number {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .exception-info {
+            font-size: 0.85em;
+        }
+        
+        .exception-name {
+            font-size: 1.2em;
+            margin-bottom: 3px;
+        }
+        
+        .exception-title {
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        
+        .legend-box {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ddd;
+            margin-right: 5px;
+        }
+        
+        .legend-box.today {
+            background-color: #e3f2fd;
+            border-color: #2196f3;
+        }
+        
+        .legend-box.has-exception {
+            background-color: #fff3cd;
+        }
+        
+        .badge-sm {
+            font-size: 0.7em;
+            padding: 2px 4px;
+        }
+    </style>
+}

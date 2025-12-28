@@ -1,0 +1,171 @@
+@using HRMANGMANGMENT.Services
+@{
+    ViewData["Title"] = "Send Team Notification";
+    var teamMembers = ViewBag.TeamMembers as IEnumerable<TeamMemberInfo> ?? Enumerable.Empty<TeamMemberInfo>();
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-send"></i> Send Team Notification</h2>
+                <p class="mb-0 opacity-75">Send a notification to selected team members</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Index" class="btn btn-secondary hover-lift">
+                    <i class="bi bi-arrow-left"></i> Back to Notifications
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-info-circle-fill"></i> @TempData["WarningMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card glass-card hover-lift">
+                <div class="card-header card-gradient-success">
+                    <h5 class="mb-0"><i class="bi bi-chat-dots"></i> Compose Notification</h5>
+                </div>
+                <div class="card-body">
+                    @if (teamMembers.Any())
+                    {
+                        <form asp-action="SendToTeam" method="post">
+                            @Html.AntiForgeryToken()
+
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-people"></i> Select Team Members <span class="text-danger">*</span>
+                                </label>
+                                <div class="d-flex gap-2 mb-2">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAll()">
+                                        <i class="bi bi-check-all"></i> Select All
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAll()">
+                                        <i class="bi bi-x-lg"></i> Clear All
+                                    </button>
+                                </div>
+                                <div class="border rounded p-3" style="max-height: 250px; overflow-y: auto;">
+                                    @foreach (var member in teamMembers)
+                                    {
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input team-member-checkbox" type="checkbox" 
+                                                   value="@member.EmployeeId" id="member_@member.EmployeeId">
+                                            <label class="form-check-label" for="member_@member.EmployeeId">
+                                                <strong>@member.FullName</strong>
+                                                @if (!string.IsNullOrEmpty(member.PositionTitle))
+                                                {
+                                                    <small class="text-muted">- @member.PositionTitle</small>
+                                                }
+                                                @if (!string.IsNullOrEmpty(member.DepartmentName))
+                                                {
+                                                    <small class="badge bg-light text-dark ms-1">@member.DepartmentName</small>
+                                                }
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                                <input type="hidden" id="selectedEmployees" name="selectedEmployees" value="">
+                                <div class="form-text">
+                                    <span id="selectedCount">0</span> team member(s) selected
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="urgency" class="form-label">
+                                    <i class="bi bi-exclamation-circle"></i> Urgency Level <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="urgency" name="urgency" required>
+                                    <option value="Low">Low - Informational</option>
+                                    <option value="Normal" selected>Normal - Standard</option>
+                                    <option value="Medium">Medium - Important</option>
+                                    <option value="High">High - Urgent</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="message" class="form-label">
+                                    <i class="bi bi-chat-text"></i> Message <span class="text-danger">*</span>
+                                </label>
+                                <textarea class="form-control" id="message" name="message" rows="5" required 
+                                          placeholder="Enter your notification message here..."></textarea>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a asp-action="Index" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </a>
+                                <button type="submit" class="btn btn-success btn-lg" onclick="return updateSelectedEmployees()">
+                                    <i class="bi bi-send"></i> Send Notification
+                                </button>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-people" style="font-size: 4rem; color: #ccc;"></i>
+                            <h5 class="mt-3 text-muted">No Team Members</h5>
+                            <p class="text-muted">You don't have any team members assigned to you yet.</p>
+                            <a asp-action="Index" class="btn btn-primary">
+                                <i class="bi bi-arrow-left"></i> Back to Notifications
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function selectAll() {
+            document.querySelectorAll('.team-member-checkbox').forEach(cb => cb.checked = true);
+            updateCount();
+        }
+
+        function deselectAll() {
+            document.querySelectorAll('.team-member-checkbox').forEach(cb => cb.checked = false);
+            updateCount();
+        }
+
+        function updateCount() {
+            const count = document.querySelectorAll('.team-member-checkbox:checked').length;
+            document.getElementById('selectedCount').textContent = count;
+        }
+
+        function updateSelectedEmployees() {
+            const selected = Array.from(document.querySelectorAll('.team-member-checkbox:checked'))
+                .map(cb => cb.value);
+            
+            if (selected.length === 0) {
+                alert('Please select at least one team member.');
+                return false;
+            }
+            
+            document.getElementById('selectedEmployees').value = selected.join(',');
+            return true;
+        }
+
+        // Update count when checkboxes change
+        document.querySelectorAll('.team-member-checkbox').forEach(cb => {
+            cb.addEventListener('change', updateCount);
+        });
+    </script>
+}

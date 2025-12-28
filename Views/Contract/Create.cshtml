@@ -1,0 +1,130 @@
+@model HRMANGMANGMENT.Models.Contract
+
+@{
+    ViewData["Title"] = "Create Contract";
+}
+
+<div class="container mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-12">
+                <h2><i class="bi bi-file-earmark-plus"></i> Create New Contract</h2>
+                <p class="mb-0 opacity-75">Add a new employment contract</p>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Create" method="post">
+        <div class="row stagger-animation">
+            <!-- Contract Information -->
+            <div class="col-md-6 mb-4">
+                <div class="card glass-card hover-lift animate-slide-left">
+                    <div class="card-header card-gradient-primary">
+                        <h5 class="mb-0"><i class="bi bi-file-text-fill"></i> Contract Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="EmployeeId" class="form-label">
+                                <i class="bi bi-person text-primary"></i> Employee <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="EmployeeId" asp-items="ViewBag.Employees" class="form-select" required>
+                                <option value="">-- Select Employee --</option>
+                            </select>
+                            <span asp-validation-for="EmployeeId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ContractType" class="form-label">
+                                <i class="bi bi-briefcase text-info"></i> Contract Type <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="ContractType" class="form-select" required>
+                                <option value="">Select Type</option>
+                                <option value="Full-time">Full-time</option>
+                                <option value="Part-time">Part-time</option>
+                                <option value="Consultant">Consultant</option>
+                                <option value="Internship">Internship</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Salary" class="form-label">
+                                <i class="bi bi-cash text-success"></i> Salary <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Salary" type="number" step="0.01" class="form-control" required />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dates & Status -->
+            <div class="col-md-6 mb-4">
+                <div class="card glass-card hover-lift animate-slide-right">
+                    <div class="card-header card-gradient-info">
+                        <h5 class="mb-0"><i class="bi bi-calendar-fill"></i> Dates & Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="StartDate" class="form-label">
+                                <i class="bi bi-calendar-check text-success"></i> Start Date <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="StartDate" type="date" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="EndDate" class="form-label">
+                                <i class="bi bi-calendar-x text-warning"></i> End Date
+                            </label>
+                            <input asp-for="EndDate" type="date" class="form-control" />
+                            <small class="text-muted">Leave empty for permanent contracts</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label">
+                                <i class="bi bi-activity text-primary"></i> Status
+                            </label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Active">Active</option>
+                                <option value="Pending">Pending</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terms -->
+            <div class="col-md-12 mb-4">
+                <div class="card glass-card hover-lift animate-scale">
+                    <div class="card-header card-gradient-warning">
+                        <h5 class="mb-0"><i class="bi bi-file-text"></i> Contract Terms</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="Terms" class="form-label">
+                                <i class="bi bi-list-ul text-info"></i> Terms & Conditions
+                            </label>
+                            <textarea asp-for="Terms" class="form-control" rows="6" 
+                                      placeholder="Enter contract terms, conditions, benefits, etc..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="card glass-card animate-scale">
+            <div class="card-body text-center">
+                <button type="submit" class="btn btn-primary btn-lg hover-lift">
+                    <i class="bi bi-save-fill"></i> Create Contract
+                </button>
+                <a asp-action="Index" class="btn btn-secondary btn-lg hover-lift">
+                    <i class="bi bi-x-circle-fill"></i> Cancel
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

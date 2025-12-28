@@ -1,0 +1,202 @@
+@model HRMANGMANGMENT.Models.DiversityReport
+@{
+    ViewData["Title"] = "Diversity Report";
+    var departments = ViewBag.Departments as IEnumerable<HRMANGMANGMENT.Models.Department>;
+    var selectedDept = ViewBag.SelectedDepartment as int?;
+}
+
+<div class="container-fluid mt-4 animate-fade-in">
+    <!-- Page Header -->
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-people"></i> Diversity Report</h2>
+                <p class="mb-0 opacity-75">Generated on @Model.ReportDate.ToString("MMMM dd, yyyy HH:mm")</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Index" class="btn btn-secondary hover-lift me-2">
+                    <i class="bi bi-arrow-left"></i> Dashboard
+                </a>
+                <a asp-action="Compliance" class="btn btn-info hover-lift">
+                    <i class="bi bi-shield-check"></i> Compliance Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="card glass-card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-9">
+                    <label class="form-label">Filter by Department</label>
+                    <select name="departmentId" class="form-select">
+                        <option value="">All Departments</option>
+                        @if (departments != null)
+                        {
+                            @foreach (var dept in departments)
+                            {
+                                <option value="@dept.DepartmentId" selected="@(selectedDept == dept.DepartmentId)">@dept.DepartmentName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-funnel"></i> Generate Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Overview & Age Distribution -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-4">
+            <div class="card glass-card h-100">
+                <div class="card-header card-gradient-primary">
+                    <h5 class="mb-0"><i class="bi bi-people"></i> Workforce Overview</h5>
+                </div>
+                <div class="card-body text-center">
+                    <i class="bi bi-people-fill text-primary" style="font-size: 4rem;"></i>
+                    <h1 class="mt-3 mb-0">@Model.TotalEmployees</h1>
+                    <p class="text-muted">Total Employees</p>
+                    <hr />
+                    <p class="text-muted small">
+                        <i class="bi bi-info-circle"></i> 
+                        Gender data is not currently tracked in the system.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card glass-card h-100">
+                <div class="card-header card-gradient-success">
+                    <h5 class="mb-0"><i class="bi bi-calendar3"></i> Age Distribution</h5>
+                </div>
+                <div class="card-body">
+                    @{
+                        var ageTotal = Model.Under25 + Model.Age25to34 + Model.Age35to44 + Model.Age45to54 + Model.Over55;
+                        if (ageTotal == 0) ageTotal = 1;
+                    }
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>Under 25</span>
+                            <span>@Model.Under25 (@(Math.Round((decimal)Model.Under25 / ageTotal * 100, 1))%)</span>
+                        </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-info" style="width: @((Model.Under25 * 100.0 / ageTotal))%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>25-34</span>
+                            <span>@Model.Age25to34 (@(Math.Round((decimal)Model.Age25to34 / ageTotal * 100, 1))%)</span>
+                        </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-primary" style="width: @((Model.Age25to34 * 100.0 / ageTotal))%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>35-44</span>
+                            <span>@Model.Age35to44 (@(Math.Round((decimal)Model.Age35to44 / ageTotal * 100, 1))%)</span>
+                        </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-success" style="width: @((Model.Age35to44 * 100.0 / ageTotal))%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>45-54</span>
+                            <span>@Model.Age45to54 (@(Math.Round((decimal)Model.Age45to54 / ageTotal * 100, 1))%)</span>
+                        </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-warning" style="width: @((Model.Age45to54 * 100.0 / ageTotal))%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between">
+                            <span>55+</span>
+                            <span>@Model.Over55 (@(Math.Round((decimal)Model.Over55 / ageTotal * 100, 1))%)</span>
+                        </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-danger" style="width: @((Model.Over55 * 100.0 / ageTotal))%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contract Types & Department Breakdown -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-4">
+            <div class="card glass-card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> Contract Types</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <span><i class="bi bi-infinity text-primary"></i> Permanent</span>
+                        <span class="badge bg-primary fs-6">@Model.PermanentContracts</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <span><i class="bi bi-clock text-warning"></i> Temporary</span>
+                        <span class="badge bg-warning fs-6">@Model.TemporaryContracts</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-briefcase text-info"></i> Contractor</span>
+                        <span class="badge bg-info fs-6">@Model.ContractorContracts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card glass-card h-100">
+                <div class="card-header card-gradient-warning">
+                    <h5 class="mb-0"><i class="bi bi-building"></i> Department Breakdown</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Department</th>
+                                    <th>Employees</th>
+                                    <th>Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.DepartmentBreakdowns != null && Model.DepartmentBreakdowns.Any())
+                                {
+                                    @foreach (var dept in Model.DepartmentBreakdowns)
+                                    {
+                                        <tr>
+                                            <td><strong>@dept.DepartmentName</strong></td>
+                                            <td>@dept.EmployeeCount</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="progress flex-grow-1 me-2" style="height: 10px;">
+                                                        <div class="progress-bar" style="width: @dept.Percentage%"></div>
+                                                    </div>
+                                                    <span class="badge bg-secondary">@dept.Percentage%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-3">No department data available</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

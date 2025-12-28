@@ -1,0 +1,244 @@
+@model HRMANGMANGMENT.Models.ManageLevelsViewModel
+
+@{
+    ViewData["Title"] = "Manage Hierarchy Levels";
+    // Check if there was a row-specific error to highlight
+    var errorRowId = TempData["ErrorRowId"] != null ? Convert.ToInt32(TempData["ErrorRowId"]) : 0;
+}
+
+<div class="container-fluid mt-4">
+    <div class="page-header stagger-animation">
+        <div class="row align-items-center mb-4">
+            <div class="col-md-8">
+                <h2><i class="bi bi-diagram-3-fill"></i> Manage Hierarchy Levels</h2>
+                <p class="mb-0 opacity-75">Reassign employees to different managers or departments</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <form asp-action="Rebuild" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-warning me-2" title="Rebuild Hierarchy">
+                        <i class="bi bi-arrow-repeat"></i> Rebuild Layers
+                    </button>
+                </form>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Chart
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null && errorRowId == 0)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0"><i class="bi bi-people"></i> All Employees (@(Model?.Employees.Count ?? 0))</h5>
+        </div>
+        <div class="card-body p-0">
+            @if (Model != null && Model.Employees.Any())
+            {
+                <div class="table-responsive" style="max-height: 700px; overflow-y: auto;">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light sticky-top" style="z-index: 10;">
+                            <tr>
+                                <th style="width: 5%">ID</th>
+                                <th style="width: 15%">Employee</th>
+                                <th style="width: 15%">Current Manager</th>
+                                <th style="width: 15%">Current Dept</th>
+                                <th style="width: 8%">Level</th>
+                                <th style="width: 42%">Update (Manager/Department)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Employees)
+                            {
+                                var badgeClass = item.HierarchyLevel switch {
+                                    0 => "bg-danger",
+                                    1 => "bg-warning text-dark",
+                                    2 => "bg-info",
+                                    _ => "bg-secondary"
+                                };
+                                var isErrorRow = item.EmployeeId == errorRowId;
+                                var rowClass = isErrorRow ? "table-danger" : "";
+
+                                <tr class="@rowClass" id="row-@item.EmployeeId">
+                                    <td>@item.EmployeeId</td>
+                                    <td>
+                                        <div class="fw-bold">@item.EmployeeName</div>
+                                    </td>
+                                    <td class="text-muted">
+                                        @item.CurrentManagerName
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border">@item.CurrentDepartmentName</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @badgeClass">Level @item.HierarchyLevel</span>
+                                    </td>
+                                    <td class="p-3">
+                                        
+                                        @if (isErrorRow)
+                                        {
+                                            <div class="alert alert-danger py-2 px-3 small mb-2">
+                                                <i class="bi bi-exclamation-circle-fill"></i> @TempData["ErrorMessage"]
+                                            </div>
+                                        }
+
+                                        <form asp-action="ReassignEmployee" method="post" class="reassign-form" id="form-@item.EmployeeId" onsubmit="return confirmUpdate(this)">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="EmployeeId" value="@item.EmployeeId" />
+                                            
+                                            <div class="row g-2">
+                                                <!-- Update Manager -->
+                                                <div class="col-md-6">
+                                                    <label class="form-label small text-muted mb-1">New Manager</label>
+                                                    <select name="NewManagerId" class="form-select form-select-sm manager-select" onchange="updateRowState(@item.EmployeeId)">
+                                                        <option value="">Keep current manager</option>
+                                                        @foreach (var mgr in Model.AvailableManagers.Where(m => m.EmployeeId != item.EmployeeId))
+                                                        {
+                                                            <option value="@mgr.EmployeeId">@mgr.FullName</option>
+                                                        }
+                                                    </select>
+                                                    <div class="small text-success mt-1 d-none hint-mgr" id="hint-mgr-@item.EmployeeId">
+                                                        <i class="bi bi-arrow-right"></i> Will change to: <span class="val"></span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Update Department -->
+                                                <div class="col-md-6">
+                                                    <label class="form-label small text-muted mb-1">New Department</label>
+                                                    <select name="NewDepartmentId" class="form-select form-select-sm dept-select" onchange="updateRowState(@item.EmployeeId)">
+                                                        <option value="">Keep current department</option>
+                                                        @foreach (var dept in Model.AvailableDepartments)
+                                                        {
+                                                            <option value="@dept.DepartmentId">@dept.DepartmentName</option>
+                                                        }
+                                                    </select>
+                                                    <div class="small text-success mt-1 d-none hint-dept" id="hint-dept-@item.EmployeeId">
+                                                        <i class="bi bi-arrow-right"></i> Will change to: <span class="val"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Actions -->
+                                            <div class="d-flex align-items-center mt-3">
+                                                <button type="submit" class="btn btn-primary btn-sm px-4 me-3 reassign-btn" id="btn-@item.EmployeeId" disabled>
+                                                    Apply Changes
+                                                </button>
+                                                <a href="javascript:void(0)" onclick="resetRow(@item.EmployeeId)" class="small text-muted text-decoration-none">
+                                                    Reset
+                                                </a>
+                                            </div>
+                                            <div class="form-text small mt-1">Select only if you want to change it.</div>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <p class="text-muted">No employees found.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateRowState(empId) {
+        const form = document.getElementById('form-' + empId);
+        const btn = document.getElementById('btn-' + empId);
+        
+        const mgrSelect = form.querySelector('.manager-select');
+        const deptSelect = form.querySelector('.dept-select');
+        
+        const hintMgr = document.getElementById('hint-mgr-' + empId);
+        const hintDept = document.getElementById('hint-dept-' + empId);
+        
+        let hasChange = false;
+
+        // Manager Logic
+        if (mgrSelect.value !== "") {
+            hasChange = true;
+            const text = mgrSelect.options[mgrSelect.selectedIndex].text;
+            hintMgr.querySelector('.val').textContent = text;
+            hintMgr.classList.remove('d-none');
+        } else {
+            hintMgr.classList.add('d-none');
+        }
+
+        // Dept Logic
+        if (deptSelect.value !== "") {
+            hasChange = true;
+            const text = deptSelect.options[deptSelect.selectedIndex].text;
+            hintDept.querySelector('.val').textContent = text;
+            hintDept.classList.remove('d-none');
+        } else {
+            hintDept.classList.add('d-none');
+        }
+
+        // Button State
+        if (hasChange) {
+            btn.removeAttribute('disabled');
+        } else {
+            btn.setAttribute('disabled', 'disabled');
+        }
+    }
+
+    function resetRow(empId) {
+        const form = document.getElementById('form-' + empId);
+        const mgrSelect = form.querySelector('.manager-select');
+        const deptSelect = form.querySelector('.dept-select');
+        
+        mgrSelect.value = "";
+        deptSelect.value = "";
+        
+        updateRowState(empId);
+    }
+    
+    function confirmUpdate(form) {
+        const mgrSelect = form.querySelector('.manager-select');
+        const deptSelect = form.querySelector('.dept-select');
+        
+        let msg = "You are about to update:\n";
+        let changes = [];
+        
+        if (mgrSelect.value !== "") {
+            changes.push("- Manager -> " + mgrSelect.options[mgrSelect.selectedIndex].text);
+        }
+        if (deptSelect.value !== "") {
+            changes.push("- Department -> " + deptSelect.options[deptSelect.selectedIndex].text);
+        }
+        
+        if (changes.length === 0) return false;
+        
+        msg += changes.join("\n");
+        msg += "\n\nProceed?";
+        
+        return confirm(msg);
+    }
+    
+    // If there is an error row, scroll to it
+    document.addEventListener("DOMContentLoaded", function() {
+        // Find error alert inside table
+        const err = document.querySelector('.table-danger');
+        if (err) {
+            err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+</script>

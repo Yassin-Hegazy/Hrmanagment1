@@ -1,0 +1,391 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - خليها على الله HRMS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/HRMANGMANGMENT.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+    <script>
+        // Apply theme immediately to prevent flash
+        const theme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+    </script>
+</head>
+<body>
+    <!-- Liquid Background Animation -->
+    <div class="liquid-background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <!-- Sidebar Layout for Authenticated Users -->
+        <div class="d-flex" id="wrapper">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="sidebar">
+                <div class="sidebar-header">
+                    <a asp-controller="Home" asp-action="Index" class="sidebar-brand">
+                        <i class="bi bi-building"></i>
+                        <span>خليها على الله</span>
+                    </a>
+                    <button class="sidebar-toggle d-lg-none" onclick="toggleSidebar()">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+
+                <div class="sidebar-menu">
+                    <!-- Dashboard -->
+                    <a asp-controller="Home" asp-action="Index" class="sidebar-link">
+                        <i class="bi bi-house-door"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <!-- My Stuff Section -->
+                    <div class="sidebar-section">My Workspace</div>
+                    <a asp-controller="Attendance" asp-action="MyAttendance" class="sidebar-link">
+                        <i class="bi bi-clock-history"></i>
+                        <span>My Attendance</span>
+                    </a>
+                    <a asp-controller="Leave" asp-action="MyLeave" class="sidebar-link">
+                        <i class="bi bi-calendar-heart"></i>
+                        <span>My Leave</span>
+                    </a>
+                    <a asp-controller="Mission" asp-action="MyMissions" class="sidebar-link">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>My Missions</span>
+                    </a>
+
+                    @if (User.IsInRole("SuperAdmin") || User.IsInRole("HRAdmin") || User.IsInRole("Manager"))
+                    {
+                        <!-- Organization Section -->
+                        <div class="sidebar-section">Organization</div>
+                        <a asp-controller="Employee" asp-action="Index" class="sidebar-link">
+                            <i class="bi bi-people"></i>
+                            <span>Employees</span>
+                        </a>
+                        <a asp-controller="Department" asp-action="Index" class="sidebar-link">
+                            <i class="bi bi-building"></i>
+                            <span>Departments</span>
+                        </a>
+                        @if (User.IsInRole("HRAdmin"))
+                        {
+                            <a asp-controller="Contract" asp-action="Index" class="sidebar-link">
+                                <i class="bi bi-file-earmark-text"></i>
+                                <span>Contracts</span>
+                            </a>
+                        }
+                    }
+
+                    <!-- Hierarchy -->
+                    <div class="sidebar-section">Hierarchy</div>
+                    <a asp-controller="Hierarchy" asp-action="Index" class="sidebar-link">
+                        <i class="bi bi-diagram-3"></i>
+                        <span>Organization</span>
+                    </a>
+                    @if (User.IsInRole("SuperAdmin"))
+                    {
+                        <a asp-controller="Hierarchy" asp-action="Tree" class="sidebar-link">
+                            <i class="bi bi-bezier2"></i>
+                            <span>Visual Tree</span>
+                        </a>
+                    }
+
+                    @if (User.IsInRole("Manager"))
+                    {
+                        <!-- Team Section -->
+                        <div class="sidebar-section">Team Management</div>
+                        <a asp-controller="Attendance" asp-action="TeamSummary" class="sidebar-link">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Team Attendance</span>
+                        </a>
+                        <a asp-controller="Leave" asp-action="TeamRequests" class="sidebar-link">
+                            <i class="bi bi-person-check"></i>
+                            <span>Leave Requests</span>
+                        </a>
+                        <a asp-controller="Mission" asp-action="PendingApprovals" class="sidebar-link">
+                            <i class="bi bi-clipboard-check"></i>
+                            <span>Mission Approvals</span>
+                        </a>
+                        <a asp-controller="Shift" asp-action="Assign" class="sidebar-link">
+                            <i class="bi bi-calendar-check"></i>
+                            <span>Assign Shift</span>
+                        </a>
+                    }
+
+                    @if (User.IsInRole("SuperAdmin") || User.IsInRole("SystemAdmin") || User.IsInRole("HRAdmin"))
+                    {
+                        <!-- Admin Section -->
+                        <div class="sidebar-section">Administration</div>
+                        @if (User.IsInRole("SuperAdmin") || User.IsInRole("SystemAdmin") || User.IsInRole("HRAdmin") || User.IsInRole("Manager"))
+                        {
+                            <a asp-controller="Shift" asp-action="Index" class="sidebar-link">
+                                <i class="bi bi-clock"></i>
+                                <span>Shift Management</span>
+                            </a>
+                        }
+                        <a asp-controller="AttendanceRules" asp-action="Index" class="sidebar-link">
+                            <i class="bi bi-gear-fill"></i>
+                            <span>Attendance Rules</span>
+                        </a>
+                        @if (User.IsInRole("HRAdmin"))
+                        {
+                            <a asp-controller="Leave" asp-action="Policies" class="sidebar-link">
+                                <i class="bi bi-file-earmark-ruled"></i>
+                                <span>Leave Policies</span>
+                            </a>
+                            <a asp-controller="Leave" asp-action="LeaveTypes" class="sidebar-link">
+                                <i class="bi bi-tags"></i>
+                                <span>Leave Types</span>
+                            </a>
+                            <a asp-controller="Leave" asp-action="Entitlements" class="sidebar-link">
+                                <i class="bi bi-person-plus"></i>
+                                <span>Entitlements</span>
+                            </a>
+                            <a asp-controller="Leave" asp-action="AllRequests" class="sidebar-link">
+                                <i class="bi bi-list-columns"></i>
+                                <span>All Leave Requests</span>
+                            </a>
+                        }
+                        @if (User.IsInRole("HRAdmin"))
+                        {
+                            <a asp-controller="Mission" asp-action="Index" class="sidebar-link">
+                                <i class="bi bi-table"></i>
+                                <span>All Missions</span>
+                            </a>
+                        }
+                    }
+
+                    @if (User.IsInRole("SuperAdmin") || User.IsInRole("HRAdmin"))
+                    {
+                        <!-- Analytics Section -->
+                        <div class="sidebar-section">Analytics</div>
+                        <a asp-controller="Analytics" asp-action="Index" class="sidebar-link">
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a asp-controller="Analytics" asp-action="DepartmentStats" class="sidebar-link">
+                            <i class="bi bi-bar-chart"></i>
+                            <span>Department Stats</span>
+                        </a>
+                        <a asp-controller="Analytics" asp-action="Compliance" class="sidebar-link">
+                            <i class="bi bi-shield-check"></i>
+                            <span>Compliance</span>
+                        </a>
+                        <a asp-controller="Analytics" asp-action="Diversity" class="sidebar-link">
+                            <i class="bi bi-people"></i>
+                            <span>Diversity</span>
+                        </a>
+                    }
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <div id="page-content-wrapper">
+                <!-- Top Navbar (simplified) -->
+                <nav class="navbar navbar-light bg-white shadow-sm top-navbar">
+                    <div class="container-fluid">
+                        <!-- Sidebar Toggle Button (visible on all screens) -->
+                        <button class="btn btn-link sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
+                            <i class="bi bi-list fs-4"></i>
+                        </button>
+                        <span class="navbar-brand d-lg-none mb-0">خليها على الله</span>
+
+                        <div class="ms-auto d-flex align-items-center">
+                            <!-- Theme Toggle -->
+                            <button class="btn btn-link me-2 text-dark" onclick="toggleTheme()" title="Toggle Theme">
+                                <i id="theme-icon" class="bi bi-moon fs-5"></i>
+                            </button>
+
+                            <!-- Notification Bell -->
+                            <a asp-controller="Notification" asp-action="Index" class="btn btn-link position-relative me-3">
+                                <i class="bi bi-bell fs-5"></i>
+                                <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                                    0
+                                </span>
+                            </a>
+
+                            <!-- User Dropdown -->
+                            <div class="dropdown">
+                                <a class="btn btn-link dropdown-toggle text-dark text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-person-circle fs-5"></i>
+                                    <span class="d-none d-md-inline ms-1">@User.Identity.Name</span>
+                                    <span class="badge bg-primary ms-1 d-none d-md-inline">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Employee" asp-action="Details" asp-route-id="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value">
+                                            <i class="bi bi-person"></i> My Profile
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-box-arrow-right"></i> Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Page Content -->
+                <div class="container-fluid p-4 animate-fade-in-up">
+                    <main role="main">
+                        @RenderBody()
+                    </main>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Overlay (mobile) -->
+        <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    }
+    else
+    {
+        <!-- Simple Layout for Non-Authenticated Users -->
+        <div class="page-wrapper">
+            <header>
+                <nav class="navbar navbar-expand-sm navbar-light navbar-custom">
+                    <div class="container">
+                        <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-building"></i> خليها على الله HRMS
+                        </a>
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">
+                                    <i class="bi bi-box-arrow-in-right"></i> Login
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-primary" asp-controller="Account" asp-action="Register">
+                                    <i class="bi bi-person-plus"></i> Register
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </header>
+
+            <div class="container animate-fade-in-up">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        // Theme Toggle Logic
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (icon) {
+                if (theme === 'dark') {
+                    icon.classList.remove('bi-moon');
+                    icon.classList.add('bi-sun');
+                    icon.classList.add('text-warning'); // Make sun yellow
+                } else {
+                    icon.classList.remove('bi-sun');
+                    icon.classList.remove('text-warning');
+                    icon.classList.add('bi-moon');
+                }
+            }
+        }
+
+        // Initialize icon on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            updateThemeIcon(savedTheme);
+        });
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const wrapper = document.getElementById('wrapper');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            // Check if we're on mobile
+            if (window.innerWidth < 992) {
+                // Mobile: slide in/out with overlay
+                sidebar.classList.toggle('active');
+                if (overlay) overlay.classList.toggle('active');
+            } else {
+                // Desktop: collapse to icons only
+                wrapper.classList.toggle('sidebar-collapsed');
+                // Save preference
+                localStorage.setItem('sidebarCollapsed', wrapper.classList.contains('sidebar-collapsed'));
+            }
+        }
+
+        // Restore sidebar state on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.innerWidth >= 992) {
+                const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (collapsed) {
+                    document.getElementById('wrapper')?.classList.add('sidebar-collapsed');
+                }
+            }
+        });
+    </script>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <script>
+            // Fetch notification count on page load
+            function updateNotificationBadge() {
+                fetch('/Notification/GetUnreadCount')
+                    .then(response => response.json())
+                    .then(data => {
+                        const badge = document.getElementById('notification-badge');
+                        if (badge && data.count > 0) {
+                            badge.textContent = data.count > 9 ? '9+' : data.count;
+                            badge.classList.remove('d-none');
+                        } else if (badge) {
+                            badge.classList.add('d-none');
+                        }
+                    })
+                    .catch(err => console.log('Notification fetch error:', err));
+            }
+
+            // Initial load
+            document.addEventListener('DOMContentLoaded', updateNotificationBadge);
+
+            // Refresh every 60 seconds
+            setInterval(updateNotificationBadge, 60000);
+
+            // Highlight active link
+            document.addEventListener('DOMContentLoaded', function() {
+                const currentPath = window.location.pathname.toLowerCase();
+                document.querySelectorAll('.sidebar-link').forEach(link => {
+                    if (link.getAttribute('href') && currentPath.startsWith(link.getAttribute('href').toLowerCase())) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        </script>
+    }
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

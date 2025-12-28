@@ -1,0 +1,496 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var userName = User.Identity?.Name ?? "User";
+    var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "Employee";
+    
+    // Role checks
+    var isAdmin = User.IsInRole("SuperAdmin") || User.IsInRole("HRAdmin") || User.IsInRole("Manager");
+    var isManager = User.IsInRole("Manager");
+}
+
+<div class="dashboard-container">
+    <!-- Welcome Header -->
+    <div class="welcome-section">
+        <div class="welcome-content">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                @if (!string.IsNullOrEmpty(ViewBag.ProfileImage as string))
+                {
+                    <img src="~/uploads/profiles/@ViewBag.ProfileImage" 
+                         alt="Profile" 
+                         class="rounded-circle border border-2 border-warning"
+                         style="width: 60px; height: 60px; object-fit: cover;">
+                }
+                else
+                {
+                    <div class="rounded-circle border border-2 border-warning d-flex align-items-center justify-content-center bg-dark"
+                         style="width: 60px; height: 60px;">
+                        <i class="bi bi-person-fill text-warning" style="font-size: 2rem;"></i>
+                    </div>
+                }
+                <div>
+                    <h1 class="mb-0">Welcome back, <span class="user-name">@userName</span>!</h1>
+                    <p class="role-badge mt-1 mb-0">
+                        <i class="bi bi-shield-check"></i> @userRole
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="date-time">
+            <i class="bi bi-calendar3"></i>
+            <span id="currentDate">@DateTime.Now.ToString("dddd, MMMM dd, yyyy")</span>
+        </div>
+    </div>
+
+    <!-- Navigation Cards -->
+    <div class="nav-cards-grid">
+        @if (isAdmin)
+        {
+            <!-- ADMIN CARDS (SuperAdmin, HRAdmin, AND Manager) -->
+            
+            <!-- All Employees - Available to all admins -->
+            <a asp-controller="Employee" asp-action="Index" class="nav-card admin-card">
+                <div class="card-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="card-content">
+                    <h3>All Employees</h3>
+                    <p>View all employee profiles</p>
+                </div>
+                <div class="card-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </a>
+        }
+        
+        @if (isAdmin)
+        {
+
+            <!-- Departments -->
+            <a asp-controller="Department" asp-action="Index" class="nav-card admin-card">
+                <div class="card-icon green">
+                    <i class="bi bi-building"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Departments</h3>
+                    <p>Organize teams and hierarchies</p>
+                </div>
+                <div class="card-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </a>
+
+            <!-- Contracts -->
+            <a asp-controller="Contract" asp-action="Index" class="nav-card admin-card">
+                <div class="card-icon purple">
+                    <i class="bi bi-file-earmark-text-fill"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Contracts</h3>
+                    <p>Manage employment contracts</p>
+                </div>
+                <div class="card-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </a>
+
+            @* Shift Management - System Admin Only *@
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("SystemAdmin"))
+            {
+                <a asp-controller="Shift" asp-action="Index" class="nav-card admin-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                        <i class="bi bi-clock-fill" style="color: white;"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Shift Management</h3>
+                        <p>Create and assign work shifts</p>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+                </a>
+            }
+            
+            @* Team Attendance - Manager/Admin Only *@
+            @if (User.IsInRole("Manager"))
+            {
+                <a asp-controller="Attendance" asp-action="TeamSummary" class="nav-card admin-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+                        <i class="bi bi-people-fill" style="color: white;"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Team Attendance</h3>
+                        <p>Monitor team members' attendance</p>
+                    </div>
+                    <div class="card-arrow">
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+                </a>
+            }
+
+            <!-- Payroll (Coming Soon) -->
+            <div class="nav-card admin-card disabled">
+                <div class="card-icon orange">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Payroll</h3>
+                    <p>Process salaries and compensation</p>
+                    <span class="coming-soon">Coming Soon</span>
+                </div>
+            </div>
+
+            <!-- Reports (Coming Soon) -->
+            <!-- Reports (Active) -->
+            <a asp-controller="Analytics" asp-action="Index" class="nav-card admin-card">
+                <div class="card-icon red">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Reports</h3>
+                    <p>Analytics and insights</p>
+                </div>
+                <div class="card-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </a>
+        }
+        
+        @* Manager-specific: My Team - Only for actual Managers who have direct reports *@
+        @if (User.IsInRole("Manager"))
+        {
+            <a asp-controller="Employee" asp-action="MyTeam" class="nav-card employee-card">
+                <div class="card-icon" style="background: linear-gradient(135deg, #6366f1, #818cf8);">
+                    <i class="bi bi-people-fill" style="color: white;"></i>
+                </div>
+                <div class="card-content">
+                    <h3>My Team</h3>
+                    <p>View your direct reports</p>
+                </div>
+                <div class="card-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </a>
+        }
+        
+        <!-- CARDS FOR ALL USERS (Including Employees) -->
+        
+        <!-- My Profile -->
+        <a asp-controller="Employee" asp-action="Details" asp-route-id="@userId" class="nav-card employee-card">
+            <div class="card-icon blue">
+                <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="card-content">
+                <h3>My Profile</h3>
+                <p>View and edit your profile</p>
+            </div>
+            <div class="card-arrow">
+                <i class="bi bi-arrow-right"></i>
+            </div>
+        </a>
+
+        <!-- My Attendance (ACTIVE) -->
+        <a asp-controller="Attendance" asp-action="MyAttendance" class="nav-card employee-card">
+            <div class="card-icon teal">
+                <i class="bi bi-calendar-check-fill"></i>
+            </div>
+            <div class="card-content">
+                <h3>My Attendance</h3>
+                <p>Clock in/out and view records</p>
+            </div>
+            <div class="card-arrow">
+                <i class="bi bi-arrow-right"></i>
+            </div>
+        </a>
+
+        <!-- Leave Requests (Coming Soon) -->
+        <!-- Leave Requests (Active) -->
+        <a asp-controller="Leave" asp-action="MyLeave" class="nav-card employee-card">
+            <div class="card-icon yellow">
+                <i class="bi bi-calendar-x-fill"></i>
+            </div>
+            <div class="card-content">
+                <h3>Leave Requests</h3>
+                <p>Request and track your leaves</p>
+            </div>
+            <div class="card-arrow">
+                <i class="bi bi-arrow-right"></i>
+            </div>
+        </a>
+
+        <!-- My Payslips (Coming Soon) -->
+        <div class="nav-card employee-card disabled">
+            <div class="card-icon green">
+                <i class="bi bi-receipt"></i>
+            </div>
+            <div class="card-content">
+                <h3>My Payslips</h3>
+                <p>View your salary details</p>
+                <span class="coming-soon">Coming Soon</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<style>
+    :root {
+        --primary-black: #1a1a1a;
+        --primary-red: #c41e3a;
+        --primary-gold: #d4a017;
+    }
+
+    .dashboard-container {
+        padding: 30px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* Welcome Section */
+    .welcome-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding: 30px;
+        background: linear-gradient(135deg, var(--primary-black), #2d2d2d);
+        border-radius: 20px;
+        color: white;
+        animation: fadeInDown 0.6s ease-out;
+    }
+
+    .welcome-content h1 {
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .user-name {
+        color: var(--primary-gold);
+    }
+
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(212, 160, 23, 0.2);
+        color: var(--primary-gold);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .date-time {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 15px;
+    }
+
+    /* Navigation Cards Grid */
+    .nav-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 24px;
+    }
+
+    .nav-card {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 24px;
+        background: white;
+        border-radius: 16px;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease-out both;
+    }
+
+    .nav-card:nth-child(1) { animation-delay: 0.1s; }
+    .nav-card:nth-child(2) { animation-delay: 0.15s; }
+    .nav-card:nth-child(3) { animation-delay: 0.2s; }
+    .nav-card:nth-child(4) { animation-delay: 0.25s; }
+    .nav-card:nth-child(5) { animation-delay: 0.3s; }
+    .nav-card:nth-child(6) { animation-delay: 0.35s; }
+    .nav-card:nth-child(7) { animation-delay: 0.4s; }
+    .nav-card:nth-child(8) { animation-delay: 0.45s; }
+    .nav-card:nth-child(9) { animation-delay: 0.5s; }
+
+    .nav-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--primary-gold);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+    }
+
+    .nav-card:hover::before {
+        transform: scaleY(1);
+    }
+
+    .nav-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .nav-card.disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    .nav-card.disabled:hover {
+        transform: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .nav-card.disabled::before {
+        display: none;
+    }
+
+    /* Card Icon */
+    .card-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-gold), #f5c842);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .card-icon i {
+        font-size: 28px;
+        color: var(--primary-black);
+    }
+
+    .card-icon.green { background: linear-gradient(135deg, #10b981, #34d399); }
+    .card-icon.green i { color: white; }
+    
+    .card-icon.blue { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
+    .card-icon.blue i { color: white; }
+    
+    .card-icon.purple { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+    .card-icon.purple i { color: white; }
+    
+    .card-icon.red { background: linear-gradient(135deg, var(--primary-red), #ef4444); }
+    .card-icon.red i { color: white; }
+    
+    .card-icon.orange { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+    .card-icon.orange i { color: white; }
+    
+    .card-icon.teal { background: linear-gradient(135deg, #14b8a6, #2dd4bf); }
+    .card-icon.teal i { color: white; }
+    
+    .card-icon.yellow { background: linear-gradient(135deg, #eab308, #facc15); }
+    .card-icon.yellow i { color: var(--primary-black); }
+
+    /* Card Content */
+    .card-content {
+        flex: 1;
+    }
+
+    .card-content h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--primary-black);
+        margin-bottom: 4px;
+    }
+
+    .card-content p {
+        font-size: 14px;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .coming-soon {
+        display: inline-block;
+        margin-top: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--primary-red);
+        background: rgba(196, 30, 58, 0.1);
+        padding: 3px 10px;
+        border-radius: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Card Arrow */
+    .card-arrow {
+        width: 36px;
+        height: 36px;
+        background: #f3f4f6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .card-arrow i {
+        color: #9ca3af;
+        transition: all 0.3s ease;
+    }
+
+    .nav-card:hover .card-arrow {
+        background: var(--primary-gold);
+    }
+
+    .nav-card:hover .card-arrow i {
+        color: var(--primary-black);
+        transform: translateX(3px);
+    }
+
+    .nav-card.disabled .card-arrow {
+        display: none;
+    }
+
+    /* Animations */
+    @@keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .welcome-section {
+            flex-direction: column;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .nav-cards-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+}

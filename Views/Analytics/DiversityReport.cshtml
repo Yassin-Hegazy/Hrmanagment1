@@ -1,0 +1,186 @@
+@using HRMANGMANGMENT.Models
+@model DiversityReportContainer
+@{
+    ViewData["Title"] = "Diversity Report";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="bi bi-people-fill"></i> Diversity Report</h2>
+                <p class="text-muted mb-0">Workforce distribution analysis</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <span class="text-muted">Generated: @Model.ReportDate.ToString("MMM dd, yyyy HH:mm")</span>
+                <a asp-action="Index" class="btn btn-secondary ms-2">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Gender Distribution -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-gender-ambiguous"></i> Gender Distribution by Department</h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.GenderRows.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Department</th>
+                                        <th class="text-center">Male</th>
+                                        <th class="text-center">Female</th>
+                                        <th class="text-center">Other</th>
+                                        <th class="text-center">Total</th>
+                                        <th>Distribution</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var row in Model.GenderRows)
+                                    {
+                                        <tr>
+                                            <td>@row.DepartmentName</td>
+                                            <td class="text-center">@row.MaleCount</td>
+                                            <td class="text-center">@row.FemaleCount</td>
+                                            <td class="text-center">@row.OtherCount</td>
+                                            <td class="text-center"><strong>@row.Total</strong></td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar bg-primary" 
+                                                         style="width: @row.MalePercent%"
+                                                         title="Male: @row.MalePercent.ToString("0.0")%">
+                                                        @if (row.MalePercent > 10) { <span>@row.MalePercent.ToString("0.0")%</span> }
+                                                    </div>
+                                                    <div class="progress-bar bg-danger" 
+                                                         style="width: @row.FemalePercent%"
+                                                         title="Female: @row.FemalePercent.ToString("0.0")%">
+                                                        @if (row.FemalePercent > 10) { <span>@row.FemalePercent.ToString("0.0")%</span> }
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot class="table-secondary">
+                                    <tr>
+                                        <th>Total</th>
+                                        <th class="text-center">@Model.GenderRows.Sum(r => r.MaleCount)</th>
+                                        <th class="text-center">@Model.GenderRows.Sum(r => r.FemaleCount)</th>
+                                        <th class="text-center">@Model.GenderRows.Sum(r => r.OtherCount)</th>
+                                        <th class="text-center">@Model.GenderRows.Sum(r => r.Total)</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="bi bi-info-circle text-info" style="font-size: 3rem;"></i>
+                            <p class="mt-2 text-muted">No gender data available</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Employment Type Distribution -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-briefcase-fill"></i> Employment Type Distribution</h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.EmploymentTypeRows.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Department</th>
+                                        <th>Contract Type</th>
+                                        <th class="text-center">Count</th>
+                                        <th>Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var currentDept = "";
+                                    }
+                                    @foreach (var row in Model.EmploymentTypeRows)
+                                    {
+                                        var showDept = row.DepartmentName != currentDept;
+                                        currentDept = row.DepartmentName;
+                                        <tr>
+                                            <td>@row.DepartmentName</td>
+                                            <td>
+                                                @{
+                                                    var badgeClass = row.ContractType switch
+                                                    {
+                                                        "FullTime" => "bg-success",
+                                                        "PartTime" => "bg-info",
+                                                        "Temporary" => "bg-warning text-dark",
+                                                        "Consultant" => "bg-secondary",
+                                                        _ => "bg-primary"
+                                                    };
+                                                }
+                                                <span class="badge @badgeClass">@row.ContractType</span>
+                                            </td>
+                                            <td class="text-center">@row.Count</td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar bg-success" 
+                                                         style="width: @row.Percent%">
+                                                        @row.Percent.ToString("0.0")%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="bi bi-info-circle text-info" style="font-size: 3rem;"></i>
+                            <p class="mt-2 text-muted">No employment type data available</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="card">
+        <div class="card-body">
+            <h6><i class="bi bi-info-circle"></i> Legend</h6>
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Gender:</strong>
+                    <span class="badge bg-primary ms-2">Male</span>
+                    <span class="badge bg-danger ms-2">Female</span>
+                    <span class="badge bg-secondary ms-2">Other/Unknown</span>
+                </div>
+                <div class="col-md-6">
+                    <strong>Contract Types:</strong>
+                    <span class="badge bg-success ms-2">FullTime</span>
+                    <span class="badge bg-info ms-2">PartTime</span>
+                    <span class="badge bg-warning text-dark ms-2">Temporary</span>
+                    <span class="badge bg-secondary ms-2">Consultant</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
