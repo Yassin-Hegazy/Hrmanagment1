@@ -1,0 +1,367 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = HRMANGMANGMENT
+build_property.RootNamespace = HRMANGMANGMENT
+build_property.ProjectDir = C:\Users\Lenovo\Desktop\Anti-grav DB1.1\Hrmanagment\HRMANGMANGMENT\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\Lenovo\Desktop\Anti-grav DB1.1\Hrmanagment\HRMANGMANGMENT
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Account/AccessDenied.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Account/ActivateAccount.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBY3RpdmF0ZUFjY291bnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Analytics/Compliance.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQW5hbHl0aWNzXENvbXBsaWFuY2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Analytics/ComplianceReport.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQW5hbHl0aWNzXENvbXBsaWFuY2VSZXBvcnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Analytics/DepartmentDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQW5hbHl0aWNzXERlcGFydG1lbnREZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Analytics/DepartmentStats.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQW5hbHl0aWNzXERlcGFydG1lbnRTdGF0cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Analytics/Diversity.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQW5hbHl0aWNzXERpdmVyc2l0eS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Analytics/DiversityReport.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQW5hbHl0aWNzXERpdmVyc2l0eVJlcG9ydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Analytics/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQW5hbHl0aWNzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/AttendanceRules/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVJ1bGVzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Attendance/CorrectionRequest.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVxDb3JyZWN0aW9uUmVxdWVzdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Attendance/Dashboard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVxEYXNoYm9hcmQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Attendance/MyAttendance.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVxNeUF0dGVuZGFuY2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Attendance/OfflineSyncTool.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVxPZmZsaW5lU3luY1Rvb2wuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Attendance/PendingCorrections.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVxQZW5kaW5nQ29ycmVjdGlvbnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Attendance/TeamSummary.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXR0ZW5kYW5jZVxUZWFtU3VtbWFyeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Contract/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udHJhY3RcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Contract/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udHJhY3RcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Contract/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udHJhY3RcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Contract/Expiring.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udHJhY3RcRXhwaXJpbmcuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Contract/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udHJhY3RcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Contract/Renew.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udHJhY3RcUmVuZXcuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Contract/Terminate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udHJhY3RcVGVybWluYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Contract/Terminated.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udHJhY3RcVGVybWluYXRlZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Department/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwYXJ0bWVudFxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Department/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwYXJ0bWVudFxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Department/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwYXJ0bWVudFxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Department/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwYXJ0bWVudFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Diagnostics/TestConnection.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGlhZ25vc3RpY3NcVGVzdENvbm5lY3Rpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Employee/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Employee/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Employee/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Employee/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Employee/ManageAttributes.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcTWFuYWdlQXR0cmlidXRlcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Employee/ManageRoles.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcTWFuYWdlUm9sZXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Exception/Calendar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhjZXB0aW9uXENhbGVuZGFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Exception/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhjZXB0aW9uXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Exception/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhjZXB0aW9uXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Exception/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhjZXB0aW9uXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Hierarchy/Department.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGllcmFyY2h5XERlcGFydG1lbnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Hierarchy/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGllcmFyY2h5XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Hierarchy/ManageLevels.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGllcmFyY2h5XE1hbmFnZUxldmVscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Hierarchy/Manager.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGllcmFyY2h5XE1hbmFnZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Hierarchy/Reassign.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGllcmFyY2h5XFJlYXNzaWduLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Hierarchy/Tree.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGllcmFyY2h5XFRyZWUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Hierarchy/_TreeNode.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGllcmFyY2h5XF9UcmVlTm9kZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/AllRequests.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcQWxsUmVxdWVzdHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/Balance.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcQmFsYW5jZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/CreatePolicy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcQ3JlYXRlUG9saWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/CreateType.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcQ3JlYXRlVHlwZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/EditPolicy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcRWRpdFBvbGljeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/Entitlements.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcRW50aXRsZW1lbnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/History.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcSGlzdG9yeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/LeaveTypes.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcTGVhdmVUeXBlcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/MyLeave.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcTXlMZWF2ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/OverrideRequest.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcT3ZlcnJpZGVSZXF1ZXN0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/Policies.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcUG9saWNpZXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/SpecialLeave.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcU3BlY2lhbExlYXZlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/Submit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcU3VibWl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Leave/TeamRequests.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVhdmVcVGVhbVJlcXVlc3RzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Mission/Assign.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWlzc2lvblxBc3NpZ24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Mission/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWlzc2lvblxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Mission/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWlzc2lvblxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Mission/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWlzc2lvblxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Mission/MyMissions.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWlzc2lvblxNeU1pc3Npb25zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Mission/PendingApprovals.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWlzc2lvblxQZW5kaW5nQXBwcm92YWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Notification/Broadcast.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90aWZpY2F0aW9uXEJyb2FkY2FzdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Notification/History.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90aWZpY2F0aW9uXEhpc3RvcnkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Notification/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90aWZpY2F0aW9uXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Notification/SendToTeam.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90aWZpY2F0aW9uXFNlbmRUb1RlYW0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Shift/Assign.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hpZnRcQXNzaWduLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Shift/AssignCustom.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hpZnRcQXNzaWduQ3VzdG9tLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Shift/ConfigureRotational.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hpZnRcQ29uZmlndXJlUm90YXRpb25hbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Shift/ConfigureSplitShift.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hpZnRcQ29uZmlndXJlU3BsaXRTaGlmdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Shift/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hpZnRcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Shift/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hpZnRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lenovo/Desktop/Anti-grav DB1.1/Hrmanagment/HRMANGMANGMENT/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-7nhri1hker
